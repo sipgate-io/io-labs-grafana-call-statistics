@@ -1,10 +1,24 @@
-version: "3.3"
+version: "3"
 
 volumes:
   db-storage:
   grafana-storage:
 
 services:
+  call-statistics-service:
+    container_name: call-statistics-service
+    build: ./call-statistics-service
+    user: "node"
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - "./call-statistics-service/:/home/node/app"
+      - "/home/node/app/node_modules"
+    command: "npm start"
+    restart: "no"
+
   db:
     container_name: mariadb
     image: mariadb:10.5
