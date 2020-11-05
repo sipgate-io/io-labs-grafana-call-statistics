@@ -1,0 +1,39 @@
+version: "3.3"
+
+volumes:
+  db-storage:
+  grafana-storage:
+
+services:
+  db:
+    container_name: mariadb
+    image: mariadb:10.5
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - "db-storage:/var/lib/mysql"
+      - "./.initdb.d:/docker-entrypoint-initdb.d:ro"
+    restart: "no"
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:7.2.1
+    environment:
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:3009:3000"
+    volumes:
+      - "grafana-storage:/var/lib/grafana"
+      - "./grafana/provisioning/:/etc/grafana/provisioning/:ro"
+      - "./grafana/dashboards/:/var/lib/grafana/dashboards/:ro"
+    restart: "no"
