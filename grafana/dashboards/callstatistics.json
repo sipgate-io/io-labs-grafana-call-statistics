@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1604333553675,
+  "iteration": 1604573832031,
   "links": [],
   "panels": [
     {
@@ -284,7 +284,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1d\", 0) as time_sec,\n  count(*) as \"incoming\"\n  \nFROM calls as c, groups as g\nWHERE direction='in' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"incoming\"\n  \nFROM calls as c, groups as g\nWHERE direction='in' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n",
           "refId": "A",
           "select": [
             [
@@ -310,7 +310,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1d\", 0) as time_sec,\n  count(*) as \"outgoing\"\nFROM calls as c, groups as g\nWHERE direction='out' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"outgoing\"\nFROM calls as c, groups as g\nWHERE direction='out' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n",
           "refId": "B",
           "select": [
             [
@@ -427,7 +427,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1h\", 0) as time_sec,\n  count(answered_at) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(answered_at) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -453,7 +453,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1h\", 0) as time_sec,\n  count(call_id) as \"declined\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(call_id) as \"declined\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -569,7 +569,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1h\", 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -688,7 +688,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1h\", 0) as time_sec,\n  count(*) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='in' AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='in' AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -714,7 +714,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, \"1h\", 0) as time_sec,\n  count(*) as \"declined\"\nFROM calls as c, groups g\nWHERE direction='in' AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"declined\"\nFROM calls as c, groups g\nWHERE direction='in' AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -832,7 +832,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(answered_at, \"1h\", 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -903,39 +903,6 @@
   "templating": {
     "list": [
       {
-        "allValue": null,
-        "current": {
-          "selected": false,
-          "text": "all",
-          "value": "all"
-        },
-        "hide": 2,
-        "includeAll": false,
-        "label": "scope",
-        "multi": false,
-        "name": "scope",
-        "options": [
-          {
-            "selected": true,
-            "text": "all",
-            "value": "all"
-          },
-          {
-            "selected": false,
-            "text": "group",
-            "value": "group"
-          },
-          {
-            "selected": false,
-            "text": "webuser",
-            "value": "webuser"
-          }
-        ],
-        "query": "all,group,webuser",
-        "skipUrlSync": false,
-        "type": "custom"
-      },
-      {
         "allValue": "",
         "current": {
           "selected": true,
@@ -960,6 +927,60 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "1d",
+          "value": "1d"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Time unit",
+        "multi": false,
+        "name": "time_unit",
+        "options": [
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": true,
+            "text": "1d",
+            "value": "1d"
+          },
+          {
+            "selected": false,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "1M",
+            "value": "1M"
+          },
+          {
+            "selected": false,
+            "text": "6M",
+            "value": "6M"
+          },
+          {
+            "selected": false,
+            "text": "1y",
+            "value": "1y"
+          }
+        ],
+        "query": "1m, 1h, 1d, 7d, 1M, 6M, 1y",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
       }
     ]
   },
@@ -971,5 +992,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 23
+  "version": 8
 }
