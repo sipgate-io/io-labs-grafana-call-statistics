@@ -66,18 +66,22 @@ export default class EventHandler {
     this.getGroupInformation(queryNumber, newCallEvent.callId).then(
       (groupEndpoint) => {
         if (groupEndpoint) {
-          this.database.query(
-            "INSERT INTO groups VALUES(?, ?) ON DUPLICATE KEY UPDATE alias=?",
-            [
+          this.database
+            .query(
+              "INSERT INTO groups VALUES(?, ?) ON DUPLICATE KEY UPDATE alias=?",
+              [
+                groupEndpoint.endpointId,
+                groupEndpoint.endpointAlias,
+                groupEndpoint.endpointAlias,
+              ]
+            )
+            .catch(console.error);
+          this.database
+            .query("UPDATE calls SET group_extension=? WHERE call_id=?", [
               groupEndpoint.endpointId,
-              groupEndpoint.endpointAlias,
-              groupEndpoint.endpointAlias,
-            ]
-          );
-          this.database.query(
-            "UPDATE calls SET group_extension=? WHERE call_id=?",
-            [groupEndpoint.endpointId, newCallEvent.callId]
-          );
+              newCallEvent.callId,
+            ])
+            .catch(console.error);
         }
       }
     );
