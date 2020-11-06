@@ -3,7 +3,6 @@
 set -e
 
 SIPGATE_API_BASE_URL="https://api.sipgate.com/v2"
-REDIRECT_URI="http://localhost:8080"
 
 function to_lower_case {
   local result=$(echo "$1" | tr '[:upper:]' '[:lower:]')
@@ -15,6 +14,29 @@ function extract_json_value {
   local value=$(echo "$1" | grep -o "\"$2\":\"[^\"]*" | grep -o '[^"]*$')
 
   echo "$value"
+}
+
+function make_api_request {
+  method="$1"
+  slug="$2"
+  token="$3"
+  body="$4"
+
+  response=$(curl -sb --request "$method" "$SIPGATE_API_BASE_URL$slug" \
+  --header "Authorization: Basic $token" \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json' \
+  -d "$body")
+
+  # TODO: More error handling :)
+  if [ "$response" = "Unauthorized" ]; then
+    printf "Got an 'Unauthorized' response from the server. Are your login details correct?\n"
+    exit 1
+  fi
+
+  stripped_json=$(echo "$response" | sed -e 's/\s\+//g')
+
+  echo $stripped_json
 }
 
 script_file="$(readlink -f "$0")"
@@ -33,39 +55,46 @@ if [ -f "$env_path" ]; then
   fi
 fi
 
+read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
 read -p "Please enter your sipgate email address: " sipgate_email
 read -s -p "Please enter your password: " sipgate_password
 
-read -d '' request_body << EOF || true
+printf "\n\n"
+
+token=$(echo -n "$sipgate_email:$sipgate_password" | base64)
+
+read -d '' webhook_settings_request << EOF || true
+{
+  "incomingUrl": "$webhook_url",
+  "outgoingUrl": "$webhook_url",
+}
+EOF
+
+make_api_request "PUT" "/settings/sipgateio" "$token" "$webhook_settings_request"
+
+read -d '' oauth_client_request << EOF || true
 {
   "name": "Call statistics service",
   "description": "Generated client for call statistics service ($(date))",
   "redirectUris": [
-    "$REDIRECT_URI"
+    "$webhook_url"
   ],
   "webOrigins": [
-    "$REDIRECT_URI"
+    "$webhook_url"
   ],
   "privacyUrl": "",
   "termsUrl": ""
 }
 EOF
 
-token=$(echo -n "$sipgate_email:$sipgate_password" | base64)
+oauth_body=$(make_api_request "POST" "/authorization/oauth2/clients" "$token" "$oauth_client_request")
 
-json_result=$(curl -sb --request POST https://api.sipgate.com/v2/authorization/oauth2/clients \
-  --header "Authorization: Basic $token" \
-  --header 'Content-Type: application/json' \
-  --header 'Accept: application/json' \
-  -d "$request_body")
-
-stripped_json=$(echo "$json_result" | sed -e 's/\s\+//g')
-
-client_id=$(extract_json_value "$stripped_json" "clientId")
-client_secret=$(extract_json_value "$stripped_json" "clientSecret")
+client_id=$(extract_json_value "$oauth_body" "clientId")
+client_secret=$(extract_json_value "$oauth_body" "clientSecret")
 
 touch .env
 printf "SIPGATE_CLIENT_ID=$client_id\n" >> .env
 printf "SIPGATE_CLIENT_SECRET=$client_secret\n" >> .env
+printf "SIPGATE_WEBHOOK_URL=$webhook_url\n" >> .env
 
 printf "\nAdded new OAuth client and setup .env file\n"
