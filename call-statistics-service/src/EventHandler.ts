@@ -52,7 +52,10 @@ export default class EventHandler {
   public handleOnHangUp(hangUpEvent: HangUpEvent) {}
 
   private async getGroupInformation(queryNumber: string, callId: string) {
-    const client = sipgateIO({ token: process.env.SIPGATE_API_TOKEN });
+    const client = sipgateIO({
+      username: process.env.SIPGATE_USERNAME,
+      password: process.env.SIPGATE_PASSWORD,
+    });
     const numberModule = createNumbersModule(client);
     return await numberModule
       .getAllNumbers()
