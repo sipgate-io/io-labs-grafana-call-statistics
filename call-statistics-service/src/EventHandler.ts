@@ -87,7 +87,39 @@ export default class EventHandler {
     );
   };
 
-  public handleOnAnswer(answerEvent: AnswerEvent) {}
+  public handleOnAnswer(answerEvent: AnswerEvent) {
+    if (answerEvent.fullUserId) {
+      const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
 
-  public handleOnHangUp(hangUpEvent: HangUpEvent) {}
+      this.database
+        .query(
+          "UPDATE calls SET answered_at=?, callee_mastersip_id=?, callee_extension=?, answering_number=? WHERE call_id=?",
+          [
+            new Date(),
+            splitUserIdResult?.masterSipId || null,
+            splitUserIdResult?.userExtension || null,
+            answerEvent.answeringNumber,
+            answerEvent.callId,
+          ]
+        )
+        .catch(console.error);
+    } else {
+      this.database
+        .query(
+          "UPDATE calls SET answered_at=?, answering_number=? WHERE call_id=?",
+          [new Date(), answerEvent.answeringNumber, answerEvent.callId]
+        )
+        .catch(console.error);
+    }
+  }
+
+  public handleOnHangUp(hangUpEvent: HangUpEvent) {
+    this.database
+      .query("UPDATE calls SET end=?, hangup_cause=? WHERE call_id=?", [
+        new Date(),
+        hangUpEvent.cause,
+        hangUpEvent.callId,
+      ])
+      .catch(console.error);
+  }
 }
