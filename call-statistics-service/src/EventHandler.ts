@@ -22,7 +22,7 @@ export default class EventHandler {
     });
   }
 
-  private getGroupInformation = async (queryNumber: string, callId: string) => {
+  private getGroupInformation = async (queryNumber: string) => {
     const numberModule = createNumbersModule(this.sipgateIoClient);
 
     return await numberModule
