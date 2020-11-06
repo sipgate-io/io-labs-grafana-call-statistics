@@ -1,12 +1,18 @@
 import { createConnection } from "mysql";
 
-export function openDatabaseConnection() {
+export interface DatabaseConnection {
+  query(sql: string, args: any): Promise<any>;
+  end(): Promise<void>;
+}
+
+export const openDatabaseConnection = (): DatabaseConnection => {
   const connection = createConnection({
     host: "db",
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
   });
+
   return {
     query(sql: string, args: any = []) {
       return new Promise((resolve, reject) => {
@@ -25,4 +31,4 @@ export function openDatabaseConnection() {
       });
     },
   };
-}
+};

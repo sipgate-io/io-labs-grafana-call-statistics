@@ -5,20 +5,36 @@ import {
   sipgateIO,
   createNumbersModule,
 } from "sipgateio";
-import { openDatabaseConnection } from "./database";
+import { DatabaseConnection, openDatabaseConnection } from "./database";
 import { splitFullUserId } from "./utils";
 
 export default class EventHandler {
-  private database;
+  private database: DatabaseConnection;
 
   public constructor() {
     this.database = openDatabaseConnection();
   }
 
-  handleOnNewCall = (newCallEvent: NewCallEvent) => {
+  private getGroupInformation = async (queryNumber: string, callId: string) => {
+    const client = sipgateIO({
+      username: process.env.SIPGATE_USERNAME,
+      password: process.env.SIPGATE_PASSWORD,
+    });
+    const numberModule = createNumbersModule(client);
+    return await numberModule
+      .getAllNumbers()
+      .then((res) =>
+        res.items
+          .filter((endpoint: any) => endpoint.number == queryNumber)
+          .filter((endpoint: any) => endpoint.endpointId.startsWith("g"))
+      );
+  };
+
+  public handleOnNewCall = (newCallEvent: NewCallEvent) => {
     const fullUserId =
       newCallEvent.fullUserIds.length == 1 ? newCallEvent.fullUserIds[0] : null;
     const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
+
     this.database
       .query(
         "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false)",
@@ -50,19 +66,4 @@ export default class EventHandler {
   public handleOnAnswer(answerEvent: AnswerEvent) {}
 
   public handleOnHangUp(hangUpEvent: HangUpEvent) {}
-
-  private async getGroupInformation(queryNumber: string, callId: string) {
-    const client = sipgateIO({
-      username: process.env.SIPGATE_USERNAME,
-      password: process.env.SIPGATE_PASSWORD,
-    });
-    const numberModule = createNumbersModule(client);
-    return await numberModule
-      .getAllNumbers()
-      .then((res) =>
-        res.items
-          .filter((endpoint: any) => endpoint.number == queryNumber)
-          .filter((endpoint: any) => endpoint.endpointId.startsWith("g"))
-      );
-  }
 }
