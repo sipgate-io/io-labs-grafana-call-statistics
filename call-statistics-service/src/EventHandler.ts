@@ -4,6 +4,7 @@ import {
   NewCallEvent,
   sipgateIO,
   createNumbersModule,
+  SipgateIOClient,
 } from "sipgateio";
 import { DatabaseConnection, openDatabaseConnection } from "./database";
 import { splitFullUserId } from "./utils";
@@ -11,16 +12,19 @@ import { splitFullUserId } from "./utils";
 export default class EventHandler {
   private database: DatabaseConnection;
 
+  private sipgateIoClient: SipgateIOClient;
+
   public constructor() {
     this.database = openDatabaseConnection();
-  }
-
-  private getGroupInformation = async (queryNumber: string, callId: string) => {
-    const client = sipgateIO({
+    this.sipgateIoClient = sipgateIO({
       username: process.env.SIPGATE_USERNAME,
       password: process.env.SIPGATE_PASSWORD,
     });
-    const numberModule = createNumbersModule(client);
+  }
+
+  private getGroupInformation = async (queryNumber: string, callId: string) => {
+    const numberModule = createNumbersModule(this.sipgateIoClient);
+
     return await numberModule
       .getAllNumbers()
       .then((res) =>
