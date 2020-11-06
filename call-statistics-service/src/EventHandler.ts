@@ -27,10 +27,11 @@ export default class EventHandler {
 
     return await numberModule
       .getAllNumbers()
-      .then((res) =>
-        res.items
-          .filter((endpoint: any) => endpoint.number == queryNumber)
-          .filter((endpoint: any) => endpoint.endpointId.startsWith("g"))
+      .then(
+        (res) =>
+          res.items
+            .filter((endpoint: any) => endpoint.number == queryNumber)
+            .filter((endpoint: any) => endpoint.endpointId.startsWith("g"))[0]
       );
   };
 
@@ -63,7 +64,22 @@ export default class EventHandler {
       newCallEvent.direction == "in" ? newCallEvent.to : newCallEvent.from;
 
     this.getGroupInformation(queryNumber, newCallEvent.callId).then(
-      console.log
+      (groupEndpoint) => {
+        if (groupEndpoint) {
+          this.database.query(
+            "INSERT INTO groups VALUES(?, ?) ON DUPLICATE KEY UPDATE alias=?",
+            [
+              groupEndpoint.endpointId,
+              groupEndpoint.endpointAlias,
+              groupEndpoint.endpointAlias,
+            ]
+          );
+          this.database.query(
+            "UPDATE calls SET group_extension=? WHERE call_id=?",
+            [groupEndpoint.endpointId, newCallEvent.callId]
+          );
+        }
+      }
     );
   };
 
