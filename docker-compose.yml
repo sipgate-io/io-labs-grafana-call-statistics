@@ -8,6 +8,10 @@ services:
   call-statistics-service:
     container_name: call-statistics-service
     build: ./call-statistics-service
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     user: "node"
     ports:
       - "127.0.0.1:8080:8080"
