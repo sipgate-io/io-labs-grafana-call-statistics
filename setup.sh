@@ -66,7 +66,7 @@ token=$(echo -n "$sipgate_email:$sipgate_password" | base64)
 read -d '' webhook_settings_request << EOF || true
 {
   "incomingUrl": "$webhook_url",
-  "outgoingUrl": "$webhook_url",
+  "outgoingUrl": "$webhook_url"
 }
 EOF
 
