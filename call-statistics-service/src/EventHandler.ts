@@ -1,14 +1,14 @@
 import {
-    AnswerEvent,
-    HangUpEvent,
-    NewCallEvent,
-    sipgateIO,
-    createNumbersModule,
-    SipgateIOClient, AuthCredentials,
+  AnswerEvent,
+  HangUpEvent,
+  NewCallEvent,
+  sipgateIO,
+  createNumbersModule,
+  SipgateIOClient, AuthCredentials,
 } from "sipgateio";
 import { DatabaseConnection, openDatabaseConnection } from "./database";
 import { splitFullUserId } from "./utils";
-import {NumberResponseItem} from "sipgateio/dist/numbers";
+import { NumberResponseItem } from "sipgateio/dist/numbers";
 
 // as specified in the docker-compose.yml
 const DB_HOSTNAME = "db";
@@ -23,14 +23,14 @@ export default class EventHandler {
     this.sipgateIoClient = sipgateIO(credentials);
   }
 
-  private getGroupInformation = async (queryNumber: string): Promise <NumberResponseItem | undefined> => {
+  private getGroupInformation = async (queryNumber: string): Promise<NumberResponseItem | undefined> => {
     const numberModule = createNumbersModule(this.sipgateIoClient);
 
-    const allNumbers =  await numberModule.getAllNumbers()
+    const allNumbers = await numberModule.getAllNumbers()
 
     return allNumbers.items
-        .filter((endpoint: NumberResponseItem) => endpoint.number == queryNumber)
-        .filter((endpoint: NumberResponseItem) => endpoint.endpointId.startsWith("g"))[0]
+      .filter((endpoint: NumberResponseItem) => endpoint.number == queryNumber)
+      .filter((endpoint: NumberResponseItem) => endpoint.endpointId.startsWith("g"))[0]
   };
 
   public handleOnNewCall = (newCallEvent: NewCallEvent) => {

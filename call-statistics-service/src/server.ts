@@ -1,5 +1,6 @@
 import { createWebhookModule } from "sipgateio";
 import EventHandler from "./EventHandler";
+import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
 
 const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
 const webhookServerAddress =
@@ -7,14 +8,27 @@ const webhookServerAddress =
 
 const sipgateUsername = process.env.SIPGATE_USERNAME;
 const sipgatePassword = process.env.SIPGATE_PASSWORD;
+const clientId = process.env.SIPGATE_CLIENT_ID;
+const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
+const baseUrl = process.env.SIPGATE_BASE_URL;
 
 if (!sipgateUsername && !sipgatePassword) {
-    console.error("Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD");
-    process.exit(1)
+  console.error("Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD");
+  process.exit(1)
+}
+
+if (!clientId || !clientSecret) {
+  console.error("Please provice a client ID and client secret");
+  process.exit(1)
+}
+
+if (!baseUrl) {
+  console.error("Please provice a base URL")
+  process.exit(1)
 }
 
 const webhookModule = createWebhookModule();
-const eventHandler = new EventHandler({username: sipgateUsername,password:sipgatePassword});
+const eventHandler = new EventHandler({ username: sipgateUsername, password: sipgatePassword });
 
 webhookModule
   .createServer({
@@ -29,4 +43,10 @@ webhookModule
     webhookServer.onAnswer(eventHandler.handleOnAnswer);
 
     webhookServer.onHangUp(eventHandler.handleOnHangUp);
+
+    new AuthServer(webhookServer.getHttpServer(), {
+      clientId,
+      clientSecret,
+      redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`
+    })
   });

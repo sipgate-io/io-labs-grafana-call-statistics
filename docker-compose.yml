@@ -9,11 +9,17 @@ services:
     container_name: call-statistics-service
     build: ./call-statistics-service
     environment:
+      # DEPRECATED
       SIPGATE_USERNAME: ${SIPGATE_USERNAME}
+      # DEPRECATED
       SIPGATE_PASSWORD: ${SIPGATE_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SIPGATE_CLIENT_ID: ${SIPGATE_CLIENT_ID}
+      SIPGATE_CLIENT_SECRET: ${SIPGATE_CLIENT_SECRET}
+      SIPGATE_WEBHOOK_URL: ${SIPGATE_WEBHOOK_URL}
+      SIPGATE_BASE_URL: ${SIPGATE_BASE_URL}
     user: "node"
     ports:
       - "127.0.0.1:8080:8080"
