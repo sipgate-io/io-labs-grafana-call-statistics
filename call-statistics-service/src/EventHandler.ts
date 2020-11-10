@@ -9,13 +9,16 @@ import {
 import { DatabaseConnection, openDatabaseConnection } from "./database";
 import { splitFullUserId } from "./utils";
 
+// as specified in the docker-compose.yml
+const DB_HOSTNAME = "db";
+
 export default class EventHandler {
   private database: DatabaseConnection;
 
   private sipgateIoClient: SipgateIOClient;
 
   public constructor() {
-    this.database = openDatabaseConnection();
+    this.database = openDatabaseConnection(DB_HOSTNAME);
     this.sipgateIoClient = sipgateIO({
       username: process.env.SIPGATE_USERNAME,
       password: process.env.SIPGATE_PASSWORD,

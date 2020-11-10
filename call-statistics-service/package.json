@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node ./src/server.ts",
     "start:watch": "nodemon",
-    "generateFakeData": "ts-node ./src/fakeDataGenerator.ts",
+    "generateFakeData": "ts-node ./tools/fakeDataGenerator.ts",
     "build": "tsc"
   },
   "author": "",
