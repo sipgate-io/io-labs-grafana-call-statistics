@@ -9,12 +9,17 @@ const sipgateUsername = process.env.SIPGATE_USERNAME;
 const sipgatePassword = process.env.SIPGATE_PASSWORD;
 
 if (!sipgateUsername && !sipgatePassword) {
-    console.error("Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD");
-    process.exit(1)
+  console.error(
+    "Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD"
+  );
+  process.exit(1);
 }
 
 const webhookModule = createWebhookModule();
-const eventHandler = new EventHandler({username: sipgateUsername,password:sipgatePassword});
+const eventHandler = new EventHandler({
+  username: sipgateUsername,
+  password: sipgatePassword,
+});
 
 webhookModule
   .createServer({
@@ -24,9 +29,15 @@ webhookModule
   .then((webhookServer) => {
     console.log(`Webhook server running\n` + "Ready for calls 📞");
 
-    webhookServer.onNewCall(eventHandler.handleOnNewCall);
+    webhookServer.onNewCall((newCallEvent) => {
+      eventHandler.handleOnNewCall(newCallEvent).catch(console.error);
+    });
 
-    webhookServer.onAnswer(eventHandler.handleOnAnswer);
+    webhookServer.onAnswer((answerEvent) => {
+      eventHandler.handleOnAnswer(answerEvent).catch(console.error);
+    });
 
-    webhookServer.onHangUp(eventHandler.handleOnHangUp);
+    webhookServer.onHangUp((hangUpEvent) => {
+      eventHandler.handleOnHangUp(hangUpEvent).catch(console.error);
+    });
   });
