@@ -38,11 +38,17 @@ webhookModule
   .then((webhookServer) => {
     console.log(`Webhook server running\n` + "Ready for calls 📞");
 
-    webhookServer.onNewCall(eventHandler.handleOnNewCall);
+    webhookServer.onNewCall((newCallEvent) => {
+      eventHandler.handleOnNewCall(newCallEvent).catch(console.error);
+    });
 
-    webhookServer.onAnswer(eventHandler.handleOnAnswer);
+    webhookServer.onAnswer((answerEvent) => {
+      eventHandler.handleOnAnswer(answerEvent).catch(console.error);
+    });
 
-    webhookServer.onHangUp(eventHandler.handleOnHangUp);
+    webhookServer.onHangUp((hangUpEvent) => {
+      eventHandler.handleOnHangUp(hangUpEvent).catch(console.error);
+    });
 
     new AuthServer(webhookServer.getHttpServer(), {
       clientId,
