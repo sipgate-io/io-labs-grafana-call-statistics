@@ -26,7 +26,6 @@ services:
     depends_on:
       - db
     volumes:
-      - "./call-statistics-service/:/home/node/app"
       - "/home/node/app/node_modules"
     command: "npm start"
     restart: "no"
