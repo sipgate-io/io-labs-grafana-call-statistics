@@ -27,14 +27,12 @@ export default class EventHandler {
     this.authServer = authServer;
   }
 
-  private getGroupInformation = async (
-    queryNumber: string
-  ): Promise<NumberResponseItem | undefined> => {
+  private createAuthenticatedSipgateioClient = async () => {
     let { accessToken } = this.authServer.getAuthCredentials();
 
-    const { exp } = decode(accessToken, "", true);
+    const decodedToken = decode(accessToken, "", true);
 
-    if (new Date(exp * 1000).getTime() < Date.now()) {
+    if (this.isTokenExpired(decodedToken)) {
       accessToken = await this.authServer.refreshTokens();
       this.sipgateIoClient = sipgateIO({ token: accessToken });
     }
@@ -42,6 +40,12 @@ export default class EventHandler {
     if (!this.sipgateIoClient) {
       this.sipgateIoClient = sipgateIO({ token: accessToken });
     }
+  };
+
+  private getGroupInformation = async (
+    queryNumber: string
+  ): Promise<NumberResponseItem | undefined> => {
+    await this.createAuthenticatedSipgateioClient();
 
     const numberModule = createNumbersModule(this.sipgateIoClient);
     const allNumbers = await numberModule.getAllNumbers();
@@ -51,6 +55,14 @@ export default class EventHandler {
       .filter((endpoint: NumberResponseItem) =>
         endpoint.endpointId.startsWith("g")
       )[0];
+  };
+
+  private isTokenExpired = (token: any): boolean => {
+    if ("exp" in token) {
+      return new Date(token.exp * 1000).getTime() < Date.now();
+    }
+
+    throw new Error("Token has no expiration attribute");
   };
 
   public handleOnNewCall = async (

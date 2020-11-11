@@ -29,6 +29,19 @@ interface AuthCredentials {
   refreshTokenExpiresIn: number;
 }
 
+interface RefreshTokenOptions {
+  grant_type: string;
+  refresh_token: string;
+}
+
+interface AccessTokenOptions {
+  grant_type: string;
+  code: string;
+  redirect_uri: string;
+}
+
+type TokenRequestOptions = AccessTokenOptions | RefreshTokenOptions;
+
 export default class AuthServer {
   private httpServer: Server;
   private originalHandlers: Function[];
@@ -45,24 +58,19 @@ export default class AuthServer {
   }
 
   private async handleAuthCodeRequest(response: ServerResponse, code: string) {
-    const requestBody = {
-      client_id: this.config.clientId,
-      client_secret: this.config.clientSecret,
-      redirect_uri: this.config.redirectUri,
-      code,
+    const tokenResponse = this.sendTokenRequest({
       grant_type: "authorization_code",
-    };
+      code,
+      redirect_uri: this.config.redirectUri,
+    });
 
-    const tokenResponse = await axios.post(
-      SIPGATE_TOKEN_URL,
-      querystring.stringify(requestBody),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
+    this.setAuthCredentials(tokenResponse);
 
+    response.writeHead(301, { Location: "http://localhost:3009" });
+    response.end();
+  }
+
+  private setAuthCredentials = (tokenResponse: any) => {
     const { data } = tokenResponse;
 
     this.authCredentials = {
@@ -71,10 +79,7 @@ export default class AuthServer {
       refreshToken: data.refresh_token,
       refreshTokenExpiresIn: data.refresh_expires_in,
     };
-
-    response.writeHead(301, { Location: "http://localhost:3009" });
-    response.end();
-  }
+  };
 
   private generateAuthLink(): string {
     return `${SIPGATE_AUTH_URL}?${querystring.stringify({
@@ -164,15 +169,14 @@ export default class AuthServer {
     };
   }
 
-  public async refreshTokens(): Promise<string> {
+  private sendTokenRequest = async (options: TokenRequestOptions) => {
     const requestBody = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
-      refresh_token: this.authCredentials.refreshToken,
-      grant_type: "refresh_token",
+      ...options,
     };
 
-    const tokenResponse = await axios.post(
+    return await axios.post(
       SIPGATE_TOKEN_URL,
       querystring.stringify(requestBody),
       {
@@ -181,17 +185,17 @@ export default class AuthServer {
         },
       }
     );
+  };
 
-    const { data } = tokenResponse;
+  public async refreshTokens(): Promise<string> {
+    const tokenResponse = await this.sendTokenRequest({
+      grant_type: "refresh_token",
+      refresh_token: this.authCredentials.refreshToken,
+    });
 
-    this.authCredentials = {
-      accessToken: data.access_token,
-      accessTokenExpiresIn: data.expires_in,
-      refreshToken: data.refresh_token,
-      refreshTokenExpiresIn: data.refresh_expires_in,
-    };
+    this.setAuthCredentials(tokenResponse);
 
-    return data.access_token;
+    return tokenResponse.data.access_token;
   }
 
   public getAuthCredentials(): AuthCredentials {
