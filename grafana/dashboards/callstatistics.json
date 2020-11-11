@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1604573832031,
+  "iteration": 1605087871723,
   "links": [],
   "panels": [
     {
@@ -284,7 +284,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"incoming\"\n  \nFROM calls as c, groups as g\nWHERE direction='in' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"total\"\nFROM calls as c, groups as g\nWHERE c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -310,8 +310,34 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"outgoing\"\nFROM calls as c, groups as g\nWHERE direction='out' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"incoming\"\n  \nFROM calls as c, groups as g\nWHERE direction='in' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"outgoing\"\nFROM calls as c, groups as g\nWHERE direction='out' AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1\n\n",
+          "refId": "C",
           "select": [
             [
               {
@@ -905,7 +931,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -931,7 +957,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "1d",
           "value": "1d"
         },
@@ -992,5 +1018,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 8
+  "version": 2
 }
