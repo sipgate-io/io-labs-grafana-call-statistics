@@ -1,29 +1,40 @@
-import axios from 'axios';
-import * as querystring from 'querystring';
-import * as fs from 'fs';
+import axios from "axios";
+import * as querystring from "querystring";
+import * as fs from "fs";
 import { Server, IncomingMessage, ServerResponse } from "http";
 
 export type ParsedUrl = {
-  slug: string,
-  queryParams: Map<string, string>
-}
+  slug: string;
+  queryParams: Map<string, string>;
+};
 
 const AUTHENTICATION_ENDPOINT = "/auth";
 export const AUTHENTICATION_CODE_ENDPOINT = "/auth-code";
 const AUTH_HTML_FILE = "./web/index.html";
-const SIPGATE_AUTH_URL = "https://login.sipgate.com/auth/realms/third-party/protocol/openid-connect/auth"
-const SIPGATE_TOKEN_URL = "https://login.sipgate.com/auth/realms/third-party/protocol/openid-connect/token";
+const SIPGATE_AUTH_URL =
+  "https://login.sipgate.com/auth/realms/third-party/protocol/openid-connect/auth";
+const SIPGATE_TOKEN_URL =
+  "https://login.sipgate.com/auth/realms/third-party/protocol/openid-connect/token";
 
 type Config = {
-  clientId: string,
-  clientSecret: string,
-  redirectUri: string,
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+};
+
+interface AuthCredentials {
+  accessToken: string;
+  accessTokenExpiresIn: number;
+  refreshToken: string;
+  refreshTokenExpiresIn: number;
 }
 
 export default class AuthServer {
   private httpServer: Server;
   private originalHandlers: Function[];
   private config: Config;
+
+  private authCredentials: AuthCredentials;
 
   constructor(httpServer: Server, config: Config) {
     this.httpServer = httpServer;
@@ -39,75 +50,94 @@ export default class AuthServer {
       client_secret: this.config.clientSecret,
       redirect_uri: this.config.redirectUri,
       code,
-      grant_type: 'authorization_code',
+      grant_type: "authorization_code",
     };
 
-    const tokenResponse = await axios.post(SIPGATE_TOKEN_URL, querystring.stringify(requestBody), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+    const tokenResponse = await axios.post(
+      SIPGATE_TOKEN_URL,
+      querystring.stringify(requestBody),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
-    response.write(JSON.stringify(tokenResponse.data))
-    response.end()
+    const { data } = tokenResponse;
+
+    this.authCredentials.accessToken = data.access_token;
+    this.authCredentials.accessTokenExpiresIn = data.expires_in;
+    this.authCredentials.refreshToken = data.refresh_token;
+    this.authCredentials.refreshTokenExpiresIn = data.refresh_expires_in;
+
+    response.write(JSON.stringify(data));
+    response.end();
   }
 
   private generateAuthLink(): string {
     return `${SIPGATE_AUTH_URL}?${querystring.stringify({
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
-      response_type: "code"
-    })}`
+      response_type: "code",
+    })}`;
   }
 
   private async readHtmlFile(): Promise<string> {
     return new Promise((resolve, reject) => {
       fs.readFile(AUTH_HTML_FILE, (err, data) => {
         if (err) {
-          reject(err)
+          reject(err);
         } else {
-          resolve(data.toString())
+          resolve(data.toString());
         }
-      })
-    })
+      });
+    });
   }
 
   private async handleAuthRequest(response: ServerResponse) {
-    const htmlContents = await this.readHtmlFile()
-    const templatedContent = htmlContents.toString().replace("{OAUTH_LINK}", this.generateAuthLink())
+    const htmlContents = await this.readHtmlFile();
+    const templatedContent = htmlContents
+      .toString()
+      .replace("{OAUTH_LINK}", this.generateAuthLink());
 
-    response.setHeader("Content-type", "text/html")
-    response.write(templatedContent)
-    response.end()
+    response.setHeader("Content-type", "text/html");
+    response.write(templatedContent);
+    response.end();
   }
 
   private sendBadRequestResponse(response: ServerResponse, message: string) {
     response.statusCode = 400;
     response.write(message);
-    response.end()
+    response.end();
   }
 
-  private handleRequest = async (request: IncomingMessage, response: ServerResponse) => {
+  private handleRequest = async (
+    request: IncomingMessage,
+    response: ServerResponse
+  ) => {
     const { slug, queryParams } = this.parseUrl(request.url);
     const method = request.method;
 
     if (method === "GET" && slug === AUTHENTICATION_ENDPOINT) {
-      return this.handleAuthRequest(response)
+      return this.handleAuthRequest(response);
     }
 
     if (method === "GET" && slug === AUTHENTICATION_CODE_ENDPOINT) {
       if (!queryParams.has("code")) {
-        return this.sendBadRequestResponse(response, "Missing 'code' query param")
+        return this.sendBadRequestResponse(
+          response,
+          "Missing 'code' query param"
+        );
       }
 
-      return this.handleAuthCodeRequest(response, queryParams.get("code"))
+      return this.handleAuthCodeRequest(response, queryParams.get("code"));
     }
 
     // invoke original (stored) handlers
     for (const handler of this.originalHandlers) {
       handler(request, response);
     }
-  }
+  };
 
   private parseUrl(url: string): ParsedUrl {
     const urlParts = url.split("?");
@@ -126,7 +156,8 @@ export default class AuthServer {
     }
 
     return {
-      slug, queryParams
+      slug,
+      queryParams,
     };
   }
 }
