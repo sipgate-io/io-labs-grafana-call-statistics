@@ -13,22 +13,23 @@ const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
 const baseUrl = process.env.SIPGATE_BASE_URL;
 
 if (!sipgateUsername && !sipgatePassword) {
-  console.error("Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD");
-  process.exit(1)
+  console.error(
+    "Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD"
+  );
+  process.exit(1);
 }
 
 if (!clientId || !clientSecret) {
   console.error("Please provice a client ID and client secret");
-  process.exit(1)
+  process.exit(1);
 }
 
 if (!baseUrl) {
-  console.error("Please provice a base URL")
-  process.exit(1)
+  console.error("Please provice a base URL");
+  process.exit(1);
 }
 
 const webhookModule = createWebhookModule();
-const eventHandler = new EventHandler({ username: sipgateUsername, password: sipgatePassword });
 
 webhookModule
   .createServer({
@@ -36,6 +37,14 @@ webhookModule
     serverAddress: webhookServerAddress,
   })
   .then((webhookServer) => {
+    const authServer = new AuthServer(webhookServer.getHttpServer(), {
+      clientId,
+      clientSecret,
+      redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`,
+    });
+
+    const eventHandler = new EventHandler(authServer);
+
     console.log(`Webhook server running\n` + "Ready for calls 📞");
 
     webhookServer.onNewCall((newCallEvent) => {
@@ -49,10 +58,4 @@ webhookModule
     webhookServer.onHangUp((hangUpEvent) => {
       eventHandler.handleOnHangUp(hangUpEvent).catch(console.error);
     });
-
-    new AuthServer(webhookServer.getHttpServer(), {
-      clientId,
-      clientSecret,
-      redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`
-    })
   });

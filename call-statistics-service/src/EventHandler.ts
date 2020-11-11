@@ -4,11 +4,13 @@ import {
   NewCallEvent,
   sipgateIO,
   createNumbersModule,
-  SipgateIOClient, AuthCredentials,
+  SipgateIOClient,
 } from "sipgateio";
 import { DatabaseConnection, openDatabaseConnection } from "./database";
 import { splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
+import AuthServer from "./AuthServer";
+import { decode } from "jwt-simple";
 
 // as specified in the docker-compose.yml
 const DB_HOSTNAME = "db";
@@ -16,18 +18,32 @@ const DB_HOSTNAME = "db";
 export default class EventHandler {
   private database: DatabaseConnection;
 
+  private authServer: AuthServer;
+
   private sipgateIoClient: SipgateIOClient;
 
-  public constructor(credentials: AuthCredentials) {
+  public constructor(authServer: AuthServer) {
     this.database = openDatabaseConnection(DB_HOSTNAME);
-    this.sipgateIoClient = sipgateIO(credentials);
+    this.authServer = authServer;
   }
 
   private getGroupInformation = async (
     queryNumber: string
   ): Promise<NumberResponseItem | undefined> => {
-    const numberModule = createNumbersModule(this.sipgateIoClient);
+    let { accessToken } = this.authServer.getAuthCredentials();
 
+    const { exp } = decode(accessToken, "", true);
+
+    if (new Date(exp * 1000).getTime() < Date.now()) {
+      accessToken = await this.authServer.refreshTokens();
+      this.sipgateIoClient = sipgateIO({ token: accessToken });
+    }
+
+    if (!this.sipgateIoClient) {
+      this.sipgateIoClient = sipgateIO({ token: accessToken });
+    }
+
+    const numberModule = createNumbersModule(this.sipgateIoClient);
     const allNumbers = await numberModule.getAllNumbers();
 
     return allNumbers.items

@@ -65,12 +65,14 @@ export default class AuthServer {
 
     const { data } = tokenResponse;
 
-    this.authCredentials.accessToken = data.access_token;
-    this.authCredentials.accessTokenExpiresIn = data.expires_in;
-    this.authCredentials.refreshToken = data.refresh_token;
-    this.authCredentials.refreshTokenExpiresIn = data.refresh_expires_in;
+    this.authCredentials = {
+      accessToken: data.access_token,
+      accessTokenExpiresIn: data.expires_in,
+      refreshToken: data.refresh_token,
+      refreshTokenExpiresIn: data.refresh_expires_in,
+    };
 
-    response.write(JSON.stringify(data));
+    response.writeHead(301, { Location: "http://localhost:3009" });
     response.end();
   }
 
@@ -79,6 +81,7 @@ export default class AuthServer {
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
       response_type: "code",
+      scope: "all",
     })}`;
   }
 
@@ -159,5 +162,39 @@ export default class AuthServer {
       slug,
       queryParams,
     };
+  }
+
+  public async refreshTokens(): Promise<string> {
+    const requestBody = {
+      client_id: this.config.clientId,
+      client_secret: this.config.clientSecret,
+      refresh_token: this.authCredentials.refreshToken,
+      grant_type: "refresh_token",
+    };
+
+    const tokenResponse = await axios.post(
+      SIPGATE_TOKEN_URL,
+      querystring.stringify(requestBody),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const { data } = tokenResponse;
+
+    this.authCredentials = {
+      accessToken: data.access_token,
+      accessTokenExpiresIn: data.expires_in,
+      refreshToken: data.refresh_token,
+      refreshTokenExpiresIn: data.refresh_expires_in,
+    };
+
+    return data.access_token;
+  }
+
+  public getAuthCredentials(): AuthCredentials {
+    return this.authCredentials;
   }
 }
