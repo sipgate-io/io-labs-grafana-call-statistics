@@ -2,6 +2,7 @@ import axios from "axios";
 import * as querystring from "querystring";
 import * as fs from "fs";
 import { Server, IncomingMessage, ServerResponse } from "http";
+import { schedule } from "node-cron";
 
 export type ParsedUrl = {
   slug: string;
@@ -55,6 +56,9 @@ export default class AuthServer {
     this.originalHandlers = this.httpServer.listeners("request");
     this.httpServer.removeAllListeners("request");
     httpServer.addListener("request", this.handleRequest);
+    schedule("1 * * * *", () => {<
+      this.refreshTokens().then(console.log);
+    });
   }
 
   private async handleAuthCodeRequest(response: ServerResponse, code: string) {
@@ -67,7 +71,7 @@ export default class AuthServer {
     this.setAuthCredentials(tokenResponse);
 
     response.writeHead(301, { Location: "http://localhost:3009" });
-    response.end();
+    response.end();>
   }
 
   private setAuthCredentials = (tokenResponse: any) => {
@@ -176,7 +180,7 @@ export default class AuthServer {
       ...options,
     };
 
-    return await axios.post(
+    const tokenResponse = await axios.post(
       SIPGATE_TOKEN_URL,
       querystring.stringify(requestBody),
       {
@@ -185,6 +189,8 @@ export default class AuthServer {
         },
       }
     );
+
+    return tokenResponse;
   };
 
   public async refreshTokens(): Promise<string> {
