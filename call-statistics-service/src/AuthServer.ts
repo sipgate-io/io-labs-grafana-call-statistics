@@ -56,13 +56,13 @@ export default class AuthServer {
     this.originalHandlers = this.httpServer.listeners("request");
     this.httpServer.removeAllListeners("request");
     httpServer.addListener("request", this.handleRequest);
-    schedule("1 * * * *", () => {<
-      this.refreshTokens().then(console.log);
+    schedule("0 3 * * *", () => {
+      this.refreshTokens();
     });
   }
 
   private async handleAuthCodeRequest(response: ServerResponse, code: string) {
-    const tokenResponse = this.sendTokenRequest({
+    const tokenResponse = await this.sendTokenRequest({
       grant_type: "authorization_code",
       code,
       redirect_uri: this.config.redirectUri,
@@ -71,7 +71,7 @@ export default class AuthServer {
     this.setAuthCredentials(tokenResponse);
 
     response.writeHead(301, { Location: "http://localhost:3009" });
-    response.end();>
+    response.end();
   }
 
   private setAuthCredentials = (tokenResponse: any) => {
@@ -173,7 +173,7 @@ export default class AuthServer {
     };
   }
 
-  private sendTokenRequest = async (options: TokenRequestOptions) => {
+  private sendTokenRequest = async (options: TokenRequestOptions): Promise<any> => {
     const requestBody = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
@@ -194,6 +194,9 @@ export default class AuthServer {
   };
 
   public async refreshTokens(): Promise<string> {
+    if(!this.authCredentials || !this.authCredentials.accessToken)
+      return;
+
     const tokenResponse = await this.sendTokenRequest({
       grant_type: "refresh_token",
       refresh_token: this.authCredentials.refreshToken,

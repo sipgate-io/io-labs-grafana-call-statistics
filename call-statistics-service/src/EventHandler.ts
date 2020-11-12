@@ -68,6 +68,8 @@ export default class EventHandler {
   public handleOnNewCall = async (
     newCallEvent: NewCallEvent
   ): Promise<void> => {
+    console.log(`newCall from ${newCallEvent.from} to ${newCallEvent.to}`);
+
     const fullUserId =
       newCallEvent.fullUserIds.length == 1 ? newCallEvent.fullUserIds[0] : null;
     const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
@@ -111,6 +113,8 @@ export default class EventHandler {
   };
 
   public async handleOnAnswer(answerEvent: AnswerEvent) {
+    console.log(`answer from ${answerEvent.from} to ${answerEvent.to}`);
+
     if (answerEvent.fullUserId) {
       const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
 
@@ -133,6 +137,8 @@ export default class EventHandler {
   }
 
   public async handleOnHangUp(hangUpEvent: HangUpEvent) {
+    console.log(`hangup from ${hangUpEvent.from} to ${hangUpEvent.to}`);
+
     await this.database.query(
       "UPDATE calls SET end=?, hangup_cause=? WHERE call_id=?",
       [new Date(), hangUpEvent.cause, hangUpEvent.callId]

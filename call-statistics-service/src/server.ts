@@ -4,20 +4,11 @@ import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
 
 const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
 const webhookServerAddress =
-  process.env.SIPGATE_WEBHOOK_SERVER_ADDRESS || "https://localhost";
+  process.env.SIPGATE_WEBHOOK_URL || "https://localhost";
 
-const sipgateUsername = process.env.SIPGATE_USERNAME;
-const sipgatePassword = process.env.SIPGATE_PASSWORD;
 const clientId = process.env.SIPGATE_CLIENT_ID;
 const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
 const baseUrl = process.env.SIPGATE_BASE_URL;
-
-if (!sipgateUsername && !sipgatePassword) {
-  console.error(
-    "Please provide credentials using the environment variables SIPGATE_USERNAME and SIPGATE_PASSWORD"
-  );
-  process.exit(1);
-}
 
 if (!clientId || !clientSecret) {
   console.error("Please provice a client ID and client secret");
