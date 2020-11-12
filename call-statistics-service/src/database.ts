@@ -1,4 +1,5 @@
 import { createConnection } from "mysql";
+import { AuthCredentials } from "./AuthServer";
 
 export interface DatabaseConnection {
   query(sql: string, args: any): Promise<any>;
@@ -31,4 +32,24 @@ export const openDatabaseConnection = (host: string): DatabaseConnection => {
       });
     },
   };
+};
+
+export const readTokensFromDatabase = async (
+  database: DatabaseConnection
+): Promise<AuthCredentials> => {
+  const authenticationParams: [] = await database.query(
+    "SELECT token_type, token_value FROM authentication_params",
+    []
+  );
+
+  const tokens: AuthCredentials = {
+    accessToken: authenticationParams.find(
+      (row) => row["token_type"] == "access"
+    )["token_value"],
+    refreshToken: authenticationParams.find(
+      (row) => row["token_type"] == "refresh"
+    )["token_value"],
+  };
+
+  return tokens;
 };

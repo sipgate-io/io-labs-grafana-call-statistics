@@ -1,3 +1,5 @@
+import { decode } from "jwt-simple";
+
 interface WebUserInformation {
   masterSipId: string;
   userExtension: string;
@@ -11,4 +13,14 @@ const splitFullUserId = (fullUserId: string): WebUserInformation => {
   };
 };
 
-export { splitFullUserId };
+const isTokenExpired = (token: any): boolean => {
+  const decodedToken = decode(token, "", true);
+
+  if ("exp" in token) {
+    return new Date(token.exp * 1000).getTime() < Date.now();
+  }
+
+  throw new Error("Token has no expiration attribute");
+};
+
+export { splitFullUserId, isTokenExpired };

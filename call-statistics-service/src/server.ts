@@ -1,6 +1,10 @@
 import { createWebhookModule } from "sipgateio";
 import EventHandler from "./EventHandler";
 import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
+import { openDatabaseConnection } from "./database";
+
+// as specified in the docker-compose.yml
+const DB_HOSTNAME = "db";
 
 const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
 const webhookServerAddress =
@@ -28,13 +32,14 @@ webhookModule
     serverAddress: webhookServerAddress,
   })
   .then((webhookServer) => {
-    const authServer = new AuthServer(webhookServer.getHttpServer(), {
+    const database = openDatabaseConnection(DB_HOSTNAME);
+    const authServer = new AuthServer(database, webhookServer.getHttpServer(), {
       clientId,
       clientSecret,
       redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`,
     });
 
-    const eventHandler = new EventHandler(authServer);
+    const eventHandler = new EventHandler(database, authServer);
 
     console.log(`Webhook server running\n` + "Ready for calls 📞");
 

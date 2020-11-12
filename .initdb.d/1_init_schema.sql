@@ -27,3 +27,8 @@ CREATE TABLE forwarded_calls (
     to_call_id VARCHAR(255),
     PRIMARY KEY (from_call_id, to_call_id)
 );
+
+CREATE TABLE authentication_params (
+    token_type ENUM('access', 'refresh') PRIMARY KEY,
+    token_value TEXT NOT NULL
+);

@@ -3,6 +3,7 @@ import * as querystring from "querystring";
 import * as fs from "fs";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { schedule } from "node-cron";
+import { DatabaseConnection, readTokensFromDatabase } from "./database";
 
 export type ParsedUrl = {
   slug: string;
@@ -23,11 +24,9 @@ type Config = {
   redirectUri: string;
 };
 
-interface AuthCredentials {
+export interface AuthCredentials {
   accessToken: string;
-  accessTokenExpiresIn: number;
   refreshToken: string;
-  refreshTokenExpiresIn: number;
 }
 
 interface RefreshTokenOptions {
@@ -44,21 +43,32 @@ interface AccessTokenOptions {
 type TokenRequestOptions = AccessTokenOptions | RefreshTokenOptions;
 
 export default class AuthServer {
+  private database: DatabaseConnection;
   private httpServer: Server;
   private originalHandlers: Function[];
   private config: Config;
 
   private authCredentials: AuthCredentials;
 
-  constructor(httpServer: Server, config: Config) {
+  constructor(
+    database: DatabaseConnection,
+    httpServer: Server,
+    config: Config
+  ) {
+    this.database = database;
     this.httpServer = httpServer;
     this.config = config;
     this.originalHandlers = this.httpServer.listeners("request");
     this.httpServer.removeAllListeners("request");
     httpServer.addListener("request", this.handleRequest);
-    schedule("0 3 * * *", () => {
-      this.refreshTokens();
-    });
+    readTokensFromDatabase(database)
+      .then((authCredentials) => {
+        this.authCredentials = authCredentials;
+        schedule("0 3 * * *", () => {
+          this.refreshTokens();
+        });
+      })
+      .catch(console.error);
   }
 
   private async handleAuthCodeRequest(response: ServerResponse, code: string) {
@@ -74,15 +84,36 @@ export default class AuthServer {
     response.end();
   }
 
-  private setAuthCredentials = (tokenResponse: any) => {
+  public async refreshTokens(): Promise<string> {
+    if (!this.authCredentials || !this.authCredentials.accessToken) return;
+
+    const tokenResponse = await this.sendTokenRequest({
+      grant_type: "refresh_token",
+      refresh_token: this.authCredentials.refreshToken,
+    });
+
+    this.setAuthCredentials(tokenResponse);
+
+    return tokenResponse.data.access_token;
+  }
+
+  private setAuthCredentials = async (tokenResponse: any) => {
     const { data } = tokenResponse;
 
     this.authCredentials = {
       accessToken: data.access_token,
-      accessTokenExpiresIn: data.expires_in,
       refreshToken: data.refresh_token,
-      refreshTokenExpiresIn: data.refresh_expires_in,
     };
+
+    await this.database.query(
+      "INSERT INTO authentication_params VALUES(?, ?) ON DUPLICATE KEY UPDATE token_value=values(token_value)",
+      ["access", data.access_token]
+    );
+
+    await this.database.query(
+      "INSERT INTO authentication_params VALUES(?, ?) ON DUPLICATE KEY UPDATE token_value=values(token_value)",
+      ["refresh", data.refresh_token]
+    );
   };
 
   private generateAuthLink(): string {
@@ -173,7 +204,9 @@ export default class AuthServer {
     };
   }
 
-  private sendTokenRequest = async (options: TokenRequestOptions): Promise<any> => {
+  private sendTokenRequest = async (
+    options: TokenRequestOptions
+  ): Promise<any> => {
     const requestBody = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
@@ -192,20 +225,6 @@ export default class AuthServer {
 
     return tokenResponse;
   };
-
-  public async refreshTokens(): Promise<string> {
-    if(!this.authCredentials || !this.authCredentials.accessToken)
-      return;
-
-    const tokenResponse = await this.sendTokenRequest({
-      grant_type: "refresh_token",
-      refresh_token: this.authCredentials.refreshToken,
-    });
-
-    this.setAuthCredentials(tokenResponse);
-
-    return tokenResponse.data.access_token;
-  }
 
   public getAuthCredentials(): AuthCredentials {
     return this.authCredentials;

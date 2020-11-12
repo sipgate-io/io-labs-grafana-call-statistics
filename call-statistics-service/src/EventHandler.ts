@@ -7,13 +7,9 @@ import {
   SipgateIOClient,
 } from "sipgateio";
 import { DatabaseConnection, openDatabaseConnection } from "./database";
-import { splitFullUserId } from "./utils";
+import { isTokenExpired, splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
 import AuthServer from "./AuthServer";
-import { decode } from "jwt-simple";
-
-// as specified in the docker-compose.yml
-const DB_HOSTNAME = "db";
 
 export default class EventHandler {
   private database: DatabaseConnection;
@@ -22,17 +18,15 @@ export default class EventHandler {
 
   private sipgateIoClient: SipgateIOClient;
 
-  public constructor(authServer: AuthServer) {
-    this.database = openDatabaseConnection(DB_HOSTNAME);
+  public constructor(database: DatabaseConnection, authServer: AuthServer) {
+    this.database = database;
     this.authServer = authServer;
   }
 
   private createAuthenticatedSipgateioClient = async () => {
     let { accessToken } = this.authServer.getAuthCredentials();
 
-    const decodedToken = decode(accessToken, "", true);
-
-    if (this.isTokenExpired(decodedToken)) {
+    if (isTokenExpired(accessToken)) {
       accessToken = await this.authServer.refreshTokens();
       this.sipgateIoClient = sipgateIO({ token: accessToken });
     }
@@ -55,14 +49,6 @@ export default class EventHandler {
       .filter((endpoint: NumberResponseItem) =>
         endpoint.endpointId.startsWith("g")
       )[0];
-  };
-
-  private isTokenExpired = (token: any): boolean => {
-    if ("exp" in token) {
-      return new Date(token.exp * 1000).getTime() < Date.now();
-    }
-
-    throw new Error("Token has no expiration attribute");
   };
 
   public handleOnNewCall = async (
