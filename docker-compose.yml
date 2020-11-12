@@ -9,6 +9,7 @@ services:
     container_name: call-statistics-service
     build: ./call-statistics-service
     environment:
+      MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}

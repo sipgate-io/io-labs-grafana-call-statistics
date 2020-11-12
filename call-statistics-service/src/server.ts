@@ -1,10 +1,13 @@
 import { createWebhookModule } from "sipgateio";
 import EventHandler from "./EventHandler";
 import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
-import { openDatabaseConnection } from "./database";
+import Database from "./database";
 
 // as specified in the docker-compose.yml
-const DB_HOSTNAME = "db";
+const db_host = process.env.MYSQL_HOST;
+const db_user = process.env.MYSQL_USER;
+const db_password = process.env.MYSQL_PASSWORD;
+const db_database = process.env.MYSQL_DATABASE;
 
 const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
 const webhookServerAddress =
@@ -32,7 +35,8 @@ webhookModule
     serverAddress: webhookServerAddress,
   })
   .then((webhookServer) => {
-    const database = openDatabaseConnection(DB_HOSTNAME);
+    //const database = openDatabaseConnection(DB_HOSTNAME);
+    const database = new Database(db_host, db_user, db_password, db_database);
     const authServer = new AuthServer(database, webhookServer.getHttpServer(), {
       clientId,
       clientSecret,

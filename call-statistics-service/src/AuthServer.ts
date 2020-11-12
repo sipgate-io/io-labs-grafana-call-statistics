@@ -3,7 +3,7 @@ import * as querystring from "querystring";
 import * as fs from "fs";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { schedule } from "node-cron";
-import { DatabaseConnection, readTokensFromDatabase } from "./database";
+import Database from "./database";
 
 export type ParsedUrl = {
   slug: string;
@@ -29,6 +29,11 @@ export interface AuthCredentials {
   refreshToken: string;
 }
 
+export enum TokenType {
+  ACCESS = "access",
+  REFRESH = "refresh",
+}
+
 interface RefreshTokenOptions {
   grant_type: string;
   refresh_token: string;
@@ -43,25 +48,22 @@ interface AccessTokenOptions {
 type TokenRequestOptions = AccessTokenOptions | RefreshTokenOptions;
 
 export default class AuthServer {
-  private database: DatabaseConnection;
+  private database: Database;
   private httpServer: Server;
   private originalHandlers: Function[];
   private config: Config;
 
   private authCredentials: AuthCredentials;
 
-  constructor(
-    database: DatabaseConnection,
-    httpServer: Server,
-    config: Config
-  ) {
+  constructor(database: Database, httpServer: Server, config: Config) {
     this.database = database;
     this.httpServer = httpServer;
     this.config = config;
     this.originalHandlers = this.httpServer.listeners("request");
     this.httpServer.removeAllListeners("request");
     httpServer.addListener("request", this.handleRequest);
-    readTokensFromDatabase(database)
+    database
+      .readTokensFromDatabase()
       .then((authCredentials) => {
         this.authCredentials = authCredentials;
         schedule("0 3 * * *", () => {
@@ -105,14 +107,13 @@ export default class AuthServer {
       refreshToken: data.refresh_token,
     };
 
-    await this.database.query(
-      "INSERT INTO authentication_params VALUES(?, ?) ON DUPLICATE KEY UPDATE token_value=values(token_value)",
-      ["access", data.access_token]
+    this.database.writeToken(
+      TokenType.ACCESS,
+      this.authCredentials.accessToken
     );
-
-    await this.database.query(
-      "INSERT INTO authentication_params VALUES(?, ?) ON DUPLICATE KEY UPDATE token_value=values(token_value)",
-      ["refresh", data.refresh_token]
+    this.database.writeToken(
+      TokenType.REFRESH,
+      this.authCredentials.refreshToken
     );
   };
 

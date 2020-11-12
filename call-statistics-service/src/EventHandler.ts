@@ -6,25 +6,38 @@ import {
   createNumbersModule,
   SipgateIOClient,
 } from "sipgateio";
-import { DatabaseConnection, openDatabaseConnection } from "./database";
+import Database from "./database";
 import { isTokenExpired, splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
 import AuthServer from "./AuthServer";
 
+const baseUrl = process.env.SIPGATE_BASE_URL;
+
 export default class EventHandler {
-  private database: DatabaseConnection;
+  private database: Database;
 
   private authServer: AuthServer;
 
   private sipgateIoClient: SipgateIOClient;
 
-  public constructor(database: DatabaseConnection, authServer: AuthServer) {
+  public constructor(database: Database, authServer: AuthServer) {
     this.database = database;
     this.authServer = authServer;
   }
 
   private createAuthenticatedSipgateioClient = async () => {
-    let { accessToken } = this.authServer.getAuthCredentials();
+    let authCredentials = this.authServer.getAuthCredentials();
+
+    if (!authCredentials || !authCredentials.accessToken) {
+      console.error(
+        "Service not authenticated yet. Please visit " +
+          baseUrl +
+          "/auth and follow the link."
+      );
+      return;
+    }
+
+    let { accessToken } = authCredentials;
 
     if (isTokenExpired(accessToken)) {
       accessToken = await this.authServer.refreshTokens();
@@ -40,6 +53,10 @@ export default class EventHandler {
     queryNumber: string
   ): Promise<NumberResponseItem | undefined> => {
     await this.createAuthenticatedSipgateioClient();
+
+    if (!this.sipgateIoClient) {
+      return null;
+    }
 
     const numberModule = createNumbersModule(this.sipgateIoClient);
     const allNumbers = await numberModule.getAllNumbers();
@@ -60,22 +77,14 @@ export default class EventHandler {
       newCallEvent.fullUserIds.length == 1 ? newCallEvent.fullUserIds[0] : null;
     const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
 
-    await this.database.query(
-      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false)",
-      [
-        newCallEvent.callId,
-        new Date(),
-        null,
-        null,
-        newCallEvent.direction,
-        webUserInformation?.masterSipId || null,
-        webUserInformation?.userExtension || null,
-        newCallEvent.from,
-        newCallEvent.to,
-        null,
-        null,
-        null,
-      ]
+    this.database.addCall(
+      newCallEvent.callId,
+      new Date(),
+      newCallEvent.direction,
+      newCallEvent.from,
+      newCallEvent.to,
+      webUserInformation?.masterSipId || null,
+      webUserInformation?.userExtension || null
     );
 
     const queryNumber =
