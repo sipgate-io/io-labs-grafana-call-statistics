@@ -1,6 +1,22 @@
 import { Connection, createConnection } from "mysql";
 import { AuthCredentials, TokenType } from "./AuthServer";
 
+export interface CallObject {
+  callId: string;
+  start?: Date;
+  direction?: string;
+  callerNumber?: string;
+  calleeNumber?: string;
+  calleeMasterSipId?: string;
+  calleeExtension?: string;
+  end?: Date;
+  answeredAt?: Date;
+  answeringNumber?: string;
+  hangupCause?: string;
+  groupExtension?: string;
+  fake?: boolean;
+}
+
 export default class Database {
   private host: string;
   private user: string;
@@ -103,5 +119,88 @@ export default class Database {
         fake || false,
       ]
     );
+  }
+
+  public async insertGroup(extension: string, alias: string): Promise<void> {
+    await this.query(
+      "INSERT INTO groups VALUES(?, ?) ON DUPLICATE KEY UPDATE alias=values(alias)",
+      [extension, alias]
+    );
+  }
+
+  public async updateCall(callObject: CallObject): Promise<void> {
+    if (!callObject) {
+      throw new Error("callObject undefined or null");
+    }
+
+    let queryString: string = "UPDATE calls SET ";
+    let params = [];
+
+    if (callObject.start) {
+      queryString += "start=?, ";
+      params.push(callObject.start);
+    }
+
+    if (callObject.direction) {
+      queryString += "direction=?, ";
+      params.push(callObject.direction);
+    }
+
+    if (callObject.callerNumber) {
+      queryString += "caller_number=?, ";
+      params.push(callObject.callerNumber);
+    }
+
+    if (callObject.calleeNumber) {
+      queryString += "callee_number=?, ";
+      params.push(callObject.calleeNumber);
+    }
+
+    if (callObject.calleeMasterSipId) {
+      queryString += "callee_mastersip_id=?, ";
+      params.push(callObject.calleeMasterSipId);
+    }
+
+    if (callObject.calleeExtension) {
+      queryString += "callee_extension=?, ";
+      params.push(callObject.calleeExtension);
+    }
+
+    if (callObject.end) {
+      queryString += "end=?, ";
+      params.push(callObject.end);
+    }
+
+    if (callObject.answeredAt) {
+      queryString += "answered_at=?, ";
+      params.push(callObject.answeredAt);
+    }
+
+    if (callObject.answeringNumber) {
+      queryString += "answering_number=?, ";
+      params.push(callObject.answeringNumber);
+    }
+
+    if (callObject.hangupCause) {
+      queryString += "hangup_cause=?, ";
+      params.push(callObject.hangupCause);
+    }
+
+    if (callObject.groupExtension) {
+      queryString += "group_extension=?, ";
+      params.push(callObject.groupExtension);
+    }
+
+    if (callObject.fake) {
+      queryString += "fake=?, ";
+      params.push(callObject.fake);
+    }
+
+    queryString = queryString.slice(0, -2);
+
+    queryString += " WHERE call_id=?";
+    params.push(callObject.callId);
+
+    await this.query(queryString, params);
   }
 }

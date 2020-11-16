@@ -18,12 +18,12 @@ const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
 const baseUrl = process.env.SIPGATE_BASE_URL;
 
 if (!clientId || !clientSecret) {
-  console.error("Please provice a client ID and client secret");
+  console.error("Please provide a client ID and client secret");
   process.exit(1);
 }
 
 if (!baseUrl) {
-  console.error("Please provice a base URL");
+  console.error("Please provide a base URL");
   process.exit(1);
 }
 

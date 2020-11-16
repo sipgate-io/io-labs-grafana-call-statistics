@@ -92,18 +92,15 @@ export default class EventHandler {
 
     const groupEndpoint = await this.getGroupInformation(queryNumber);
     if (groupEndpoint) {
-      await this.database.query(
-        "INSERT INTO groups VALUES(?, ?) ON DUPLICATE KEY UPDATE alias=?",
-        [
-          groupEndpoint.endpointId,
-          groupEndpoint.endpointAlias,
-          groupEndpoint.endpointAlias,
-        ]
+      this.database.insertGroup(
+        groupEndpoint.endpointId,
+        groupEndpoint.endpointAlias
       );
-      await this.database.query(
-        "UPDATE calls SET group_extension=? WHERE call_id=?",
-        [groupEndpoint.endpointId, newCallEvent.callId]
-      );
+
+      this.database.updateCall({
+        callId: newCallEvent.callId,
+        groupExtension: groupEndpoint.endpointId,
+      });
     }
   };
 
@@ -113,30 +110,29 @@ export default class EventHandler {
     if (answerEvent.fullUserId) {
       const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
 
-      await this.database.query(
-        "UPDATE calls SET answered_at=?, callee_mastersip_id=?, callee_extension=?, answering_number=? WHERE call_id=?",
-        [
-          new Date(),
-          splitUserIdResult?.masterSipId || null,
-          splitUserIdResult?.userExtension || null,
-          answerEvent.answeringNumber,
-          answerEvent.callId,
-        ]
-      );
+      this.database.updateCall({
+        callId: answerEvent.callId,
+        answeredAt: new Date(),
+        calleeMasterSipId: splitUserIdResult.masterSipId,
+        calleeExtension: splitUserIdResult.userExtension,
+        answeringNumber: answerEvent.answeringNumber,
+      });
     } else {
-      await this.database.query(
-        "UPDATE calls SET answered_at=?, answering_number=? WHERE call_id=?",
-        [new Date(), answerEvent.answeringNumber, answerEvent.callId]
-      );
+      this.database.updateCall({
+        callId: answerEvent.callId,
+        answeredAt: new Date(),
+        answeringNumber: answerEvent.answeringNumber,
+      });
     }
   }
 
   public async handleOnHangUp(hangUpEvent: HangUpEvent) {
     console.log(`hangup from ${hangUpEvent.from} to ${hangUpEvent.to}`);
 
-    await this.database.query(
-      "UPDATE calls SET end=?, hangup_cause=? WHERE call_id=?",
-      [new Date(), hangUpEvent.cause, hangUpEvent.callId]
-    );
+    this.database.updateCall({
+      callId: hangUpEvent.callId,
+      end: new Date(),
+      hangupCause: hangUpEvent.cause,
+    });
   }
 }

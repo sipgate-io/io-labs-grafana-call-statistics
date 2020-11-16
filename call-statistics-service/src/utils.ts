@@ -16,8 +16,8 @@ const splitFullUserId = (fullUserId: string): WebUserInformation => {
 const isTokenExpired = (token: any): boolean => {
   const decodedToken = decode(token, "", true);
 
-  if ("exp" in token) {
-    return new Date(token.exp * 1000).getTime() < Date.now();
+  if ("exp" in decodedToken) {
+    return new Date(decodedToken.exp * 1000).getTime() < Date.now();
   }
 
   throw new Error("Token has no expiration attribute");
