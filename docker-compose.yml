@@ -9,9 +9,9 @@ services:
     container_name: call-statistics-service
     build: ./call-statistics-service
     environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_HOST: ${MYSQL_HOST:-db}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-call_statistics}
+      MYSQL_USER: ${MYSQL_USER:-user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       SIPGATE_CLIENT_ID: ${SIPGATE_CLIENT_ID}
       SIPGATE_CLIENT_SECRET: ${SIPGATE_CLIENT_SECRET}
@@ -33,9 +33,9 @@ services:
     image: mariadb:10.5
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-call_statistics}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?mysql password is required}
     ports:
       - "127.0.0.1:3306:3306"
     volumes:
@@ -48,8 +48,8 @@ services:
     image: grafana/grafana:7.2.1
     environment:
       GF_INSTALL_PLUGINS: grafana-piechart-panel
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-call_statistics}
+      MYSQL_USER: ${MYSQL_USER:-user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - db
