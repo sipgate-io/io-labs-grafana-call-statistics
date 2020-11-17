@@ -28,6 +28,7 @@ const callProbability = 0.7;
 const answerProbability = 0.9;
 const directionInProbability = 0.9;
 const groupProbability = 0.3;
+const activeCallProbability = 0.001;
 
 const minAnswerTime = 2000;
 const maxAnswerTime = 8000;
@@ -126,9 +127,14 @@ async function insertFakeData(db: any, time: Date) {
     console.log("answered call " + callId);
   }
 
-  const endTime = new Date(
+  let endTime = new Date(
     time.getTime() + minHangupTime + Math.random() * maxHangupTime
   );
+
+  if (Math.random() < activeCallProbability) {
+    endTime = null;
+    hangupCause = null;
+  }
 
   (async () =>
     await db.query("UPDATE calls SET end=?, hangup_cause=? WHERE call_id=?", [
