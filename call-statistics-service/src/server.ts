@@ -2,6 +2,7 @@ import { createWebhookModule } from "sipgateio";
 import EventHandler from "./EventHandler";
 import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
 import Database from "./database";
+import { readFile } from "./utils";
 
 // as specified in the docker-compose.yml
 const db_host = process.env.MYSQL_HOST;
@@ -27,35 +28,52 @@ if (!baseUrl) {
   process.exit(1);
 }
 
-const webhookModule = createWebhookModule();
+(async () => {
+  let teams;
+  try {
+    const teamsRaw = await readFile(`${process.env.HOME}/teams.json`);
+    teams = JSON.parse(teamsRaw);
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
 
-webhookModule
-  .createServer({
-    port: webhookServerPort,
-    serverAddress: webhookServerAddress,
-  })
-  .then((webhookServer) => {
-    //const database = openDatabaseConnection(DB_HOSTNAME);
-    const database = new Database(db_host, db_user, db_password, db_database);
-    const authServer = new AuthServer(database, webhookServer.getHttpServer(), {
-      clientId,
-      clientSecret,
-      redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`,
+  console.log(teams);
+
+  const webhookModule = createWebhookModule();
+
+  webhookModule
+    .createServer({
+      port: webhookServerPort,
+      serverAddress: webhookServerAddress,
+    })
+    .then((webhookServer) => {
+      //const database = openDatabaseConnection(DB_HOSTNAME);
+      const database = new Database(db_host, db_user, db_password, db_database);
+      const authServer = new AuthServer(
+        database,
+        webhookServer.getHttpServer(),
+        {
+          clientId,
+          clientSecret,
+          redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`,
+        }
+      );
+
+      const eventHandler = new EventHandler(database, authServer);
+
+      console.log(`Webhook server running\n` + "Ready for calls 📞");
+
+      webhookServer.onNewCall((newCallEvent) => {
+        eventHandler.handleOnNewCall(newCallEvent).catch(console.error);
+      });
+
+      webhookServer.onAnswer((answerEvent) => {
+        eventHandler.handleOnAnswer(answerEvent).catch(console.error);
+      });
+
+      webhookServer.onHangUp((hangUpEvent) => {
+        eventHandler.handleOnHangUp(hangUpEvent).catch(console.error);
+      });
     });
-
-    const eventHandler = new EventHandler(database, authServer);
-
-    console.log(`Webhook server running\n` + "Ready for calls 📞");
-
-    webhookServer.onNewCall((newCallEvent) => {
-      eventHandler.handleOnNewCall(newCallEvent).catch(console.error);
-    });
-
-    webhookServer.onAnswer((answerEvent) => {
-      eventHandler.handleOnAnswer(answerEvent).catch(console.error);
-    });
-
-    webhookServer.onHangUp((hangUpEvent) => {
-      eventHandler.handleOnHangUp(hangUpEvent).catch(console.error);
-    });
-  });
+})();

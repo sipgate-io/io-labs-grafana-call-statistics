@@ -1,4 +1,5 @@
 import { decode } from "jwt-simple";
+import * as fs from "fs";
 
 interface WebUserInformation {
   masterSipId: string;
@@ -23,4 +24,16 @@ const isTokenExpired = (token: any): boolean => {
   throw new Error("Token has no expiration attribute");
 };
 
-export { splitFullUserId, isTokenExpired };
+const readFile = async (path: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.toString());
+      }
+    });
+  });
+};
+
+export { splitFullUserId, isTokenExpired, readFile };

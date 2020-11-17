@@ -1,9 +1,9 @@
 import axios from "axios";
 import * as querystring from "querystring";
-import * as fs from "fs";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { schedule } from "node-cron";
 import Database from "./database";
+import { readFile } from "./utils";
 
 export type ParsedUrl = {
   slug: string;
@@ -126,20 +126,8 @@ export default class AuthServer {
     })}`;
   }
 
-  private async readHtmlFile(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(AUTH_HTML_FILE, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data.toString());
-        }
-      });
-    });
-  }
-
   private async handleAuthRequest(response: ServerResponse) {
-    const htmlContents = await this.readHtmlFile();
+    const htmlContents = await readFile(AUTH_HTML_FILE);
     const templatedContent = htmlContents
       .toString()
       .replace("{OAUTH_LINK}", this.generateAuthLink());

@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Sales Example",
+        "numbers": [
+            "+49211975379020",
+            "+4921197537902" 
+        ]
+    },
+    {
+        "name": "Marketing Example",
+        "numbers": [
+            "+4920392869465",
+            "+49203928694652" 
+        ]
+    },
+    {
+        "name": "Management Example",
+        "numbers": [
+            "+49211975379021"
+        ]
+    }
+]

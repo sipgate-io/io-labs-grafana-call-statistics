@@ -24,6 +24,7 @@ services:
       - db
     volumes:
       - "/home/node/app/node_modules"
+      - "./teams.json:/home/node/teams.json:ro"
     command: "npm start"
     restart: "no"
 
