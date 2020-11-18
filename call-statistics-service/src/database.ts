@@ -226,17 +226,21 @@ export default class Database {
   }
 
   public async updateTeams(teams: TeamObject[]): Promise<void> {
-    this.query("TRUNCATE TABLE teams");
+    await this.query("TRUNCATE TABLE teams");
 
-    teams.forEach((team) => {
-      if (team.numbers.length < 2) {
-        console.warn(`Team "${team.name}" has less than two members. Skip.`);
-        return;
-      }
+    await Promise.all(
+      teams.map((team) => {
+        if (team.numbers.length < 2) {
+          console.warn(`Team "${team.name}" has less than two members. Skip.`);
+          return;
+        }
 
-      team.numbers.forEach((number) => {
-        this.query("INSERT INTO teams VALUES(?, ?)", [team.name, number]);
-      });
-    });
+        return Promise.all(
+          team.numbers.map((number) =>
+            this.query("INSERT INTO teams VALUES(?, ?)", [team.name, number])
+          )
+        );
+      })
+    );
   }
 }
