@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1605625258313,
+  "iteration": 1605704916016,
   "links": [],
   "panels": [
     {
@@ -60,9 +60,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -80,9 +78,7 @@
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -137,9 +133,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -157,9 +151,7 @@
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -221,14 +213,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(*) as \"answered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'",
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
           "refId": "A",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -247,14 +237,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(*) as \"unanswered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'",
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
           "refId": "B",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -317,14 +305,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(*) as \"answered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"in\" AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'",
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"in\" AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
           "refId": "A",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -343,14 +329,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(*) as \"unanswered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"in\" AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'",
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(start) as time_sec,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"in\" AND answered_at IS NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
           "refId": "B",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -449,9 +433,7 @@
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -470,14 +452,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"incoming\"\n  \nFROM calls as c, groups as g\nWHERE direction='in' AND (\"${groups}\"=\"'None'\" OR (c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"incoming\"\nFROM calls as c, groups as g\nWHERE direction='in' AND (\"${groups}\"=\"'None'\" OR (c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'))\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -496,14 +476,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"outgoing\"\nFROM calls as c, groups as g\nWHERE direction='out' AND (\"${groups}\"=\"'None'\" OR (c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'))\nGROUP BY 1\nORDER BY 1\n\n",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"outgoing\"\nFROM calls as c, groups as g\nWHERE direction='out' AND (\"${groups}\"=\"'None'\" OR (c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'))\nGROUP BY 1\nORDER BY 1\n\n",
           "refId": "C",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -613,14 +591,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(answered_at) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND  alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -639,14 +615,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(call_id) as \"declined\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c, groups as g\nWHERE direction='out' AND answered_at IS NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -755,14 +729,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND (\"${groups}\"=\"'None'\" OR answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
-                "params": [
-                  "fake"
-                ],
+                "params": ["fake"],
                 "type": "column"
               }
             ]
@@ -874,14 +846,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='in' AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c, groups as g\nWHERE direction='in' AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND  alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -900,14 +870,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(*) as \"declined\"\nFROM calls as c, groups g\nWHERE direction='in' AND answered_at IS NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c, groups g\nWHERE direction='in' AND answered_at IS NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -1018,14 +986,12 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND c.group_extension=g.extension AND alias REGEXP '${groups:pipe}'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
-                "params": [
-                  "value"
-                ],
+                "params": ["value"],
                 "type": "column"
               }
             ]
@@ -1091,7 +1057,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "None",
           "value": "None"
         },
@@ -1178,5 +1144,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 3
+  "version": 4
 }
