@@ -32,3 +32,5 @@ CREATE TABLE authentication_params (
     token_type ENUM('access', 'refresh') PRIMARY KEY,
     token_value TEXT NOT NULL
 );
+
+INSERT INTO groups VALUES ("none", "None");
