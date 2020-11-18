@@ -22,19 +22,26 @@ function make_api_request {
   token="$3"
   body="$4"
 
-  response=$(curl -sb --request "$method" "$SIPGATE_API_BASE_URL$slug" \
+  response=$(curl -s --request "$method" "$SIPGATE_API_BASE_URL$slug" \
   --header "Authorization: Basic $token" \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
-  -d "$body")
+  -d "$body" \
+  --write-out '\n%{http_code}'
+  )
+  response_body="$(echo "$response" | head -n -1)"
+  status="$(echo "$response" | tail -n 1)"
 
-  # TODO: More error handling :)
-  if [ "$response" = "Unauthorized" ]; then
-    printf "Got an 'Unauthorized' response from the server. Are your login details correct?\n"
+  if [[ "$status" == "400" ]]; then
+    echo "Please provide a valid webhook URL."
+    exit 1
+  fi
+  if [[ "$status" != "2"* ]]; then
+    echo "Got an $status response from the server. Are your login details correct?"
     exit 1
   fi
 
-  stripped_json=$(echo "$response" | sed -e 's/\s\+//g')
+  stripped_json=$(echo "$response_body" | sed -e 's/\s\+//g')
 
   echo $stripped_json
 }
@@ -43,25 +50,26 @@ script_file="$(readlink -f "$0")"
 env_path="$(dirname "$script_file")/.env"
 
 if [ -f "$env_path" ]; then
-  read -p ".env file seems to exist. Would you like to overwrite it? (Y/n)" delete_env_prompt
+  read -p ".env file seems to exist. Would you like to overwrite it? (Y/n) " delete_env_prompt
 
   delete_env_prompt="${delete_env_prompt:=y}"
   if [ 'y' = $(to_lower_case "$delete_env_prompt") ]; then
     rm "$env_path"
   else
-    # We might want to start the service instead of exiting later on
-    printf "Tschüsseldorf\n"
+    printf "Aborting setup.\nYour current .env file will be used.\n"
     exit
   fi
 fi
 
-read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
 read -p "Please enter your sipgate email address: " sipgate_email
 read -s -p "Please enter your password: " sipgate_password
+printf "\n"
+read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
 
 printf "\n\n"
 
 token=$(echo -n "$sipgate_email:$sipgate_password" | base64)
+
 
 read -d '' webhook_settings_request << EOF || true
 {
@@ -92,9 +100,27 @@ oauth_body=$(make_api_request "POST" "/authorization/oauth2/clients" "$token" "$
 client_id=$(extract_json_value "$oauth_body" "clientId")
 client_secret=$(extract_json_value "$oauth_body" "clientSecret")
 
+read -p "Base URL for the authentication service: " auth_base_url
+auth_base_url=${auth_base_url:?You need to provide a base url}
+read -p "mySQL host [db]: " mysql_host
+mysql_host=${mysql_host:-db}
+read -p "mySQL database [call_statistics]: " mysql_database
+mysql_database=${mysql_database:-call_statistics}
+read -p "mySQL user [user]: " mysql_user
+mysql_user=${mysql_user:-user}
+read -p "mySQL password [supersecret]: " mysql_password
+mysql_password=${mysql_password:-supersecret}
+
 touch .env
 printf "SIPGATE_CLIENT_ID=$client_id\n" >> .env
 printf "SIPGATE_CLIENT_SECRET=$client_secret\n" >> .env
 printf "SIPGATE_WEBHOOK_URL=$webhook_url\n" >> .env
+printf "SIPGATE_BASE_URL=$auth_base_url\n" >> .env
+printf "\n" >> .env
+
+printf "MYSQL_HOST=$mysql_host\n" >> .env
+printf "MYSQL_DATABASE=$mysql_database\n" >> .env
+printf "MYSQL_USER=$mysql_user\n" >> .env
+printf "MYSQL_PASSWORD=$mysql_password\n" >> .env
 
 printf "\nAdded new OAuth client and setup .env file\n"
