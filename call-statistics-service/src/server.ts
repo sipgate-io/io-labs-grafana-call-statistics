@@ -1,7 +1,7 @@
 import { createWebhookModule } from "sipgateio";
 import EventHandler from "./EventHandler";
 import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
-import Database from "./database";
+import Database, { TeamObject } from "./database";
 import { readFile } from "./utils";
 
 // as specified in the docker-compose.yml
@@ -29,7 +29,7 @@ if (!baseUrl) {
 }
 
 (async () => {
-  let teams;
+  let teams: TeamObject[];
   try {
     const teamsRaw = await readFile(`${process.env.HOME}/teams.json`);
     teams = JSON.parse(teamsRaw);
@@ -37,8 +37,8 @@ if (!baseUrl) {
     console.error(err.message);
     process.exit(1);
   }
-
-  console.log(teams);
+  const database = new Database(db_host, db_user, db_password, db_database);
+  database.updateTeams(teams);
 
   const webhookModule = createWebhookModule();
 
@@ -48,8 +48,6 @@ if (!baseUrl) {
       serverAddress: webhookServerAddress,
     })
     .then((webhookServer) => {
-      //const database = openDatabaseConnection(DB_HOSTNAME);
-      const database = new Database(db_host, db_user, db_password, db_database);
       const authServer = new AuthServer(
         database,
         webhookServer.getHttpServer(),
