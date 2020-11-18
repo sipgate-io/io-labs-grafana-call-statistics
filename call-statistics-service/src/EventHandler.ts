@@ -11,7 +11,7 @@ import { isTokenExpired, splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
 import AuthServer from "./AuthServer";
 
-const baseUrl = process.env.SIPGATE_BASE_URL;
+const baseUrl = process.env.SERVICE_URL;
 
 export default class EventHandler {
   private database: Database;
@@ -31,8 +31,8 @@ export default class EventHandler {
     if (!authCredentials || !authCredentials.accessToken) {
       console.error(
         "Service not authenticated yet. Please visit " +
-          baseUrl +
-          "/auth and follow the link."
+        baseUrl +
+        "/auth and follow the link."
       );
       return;
     }

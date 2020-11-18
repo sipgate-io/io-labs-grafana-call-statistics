@@ -9,6 +9,11 @@ const db_user = process.env.MYSQL_USER;
 const db_password = process.env.MYSQL_PASSWORD;
 const db_database = process.env.MYSQL_DATABASE;
 
+if (!db_host || !db_user || !db_password || !db_database) {
+  console.log("Please provide the environment variables MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD and MYSQL_DATABASE");
+  process.exit(1);
+}
+
 const hangupCausesWithoutAnswer = [
   "cancel",
   "busy",

@@ -100,8 +100,8 @@ oauth_body=$(make_api_request "POST" "/authorization/oauth2/clients" "$token" "$
 client_id=$(extract_json_value "$oauth_body" "clientId")
 client_secret=$(extract_json_value "$oauth_body" "clientSecret")
 
-read -p "Base URL for the authentication service: " auth_base_url
-auth_base_url=${auth_base_url:?You need to provide a base url}
+read -p "Base URL for the authentication service: " service_url
+service_url=${service_url:?You need to provide a base url}
 read -p "mySQL host [db]: " mysql_host
 mysql_host=${mysql_host:-db}
 read -p "mySQL database [call_statistics]: " mysql_database
@@ -115,7 +115,8 @@ touch .env
 printf "SIPGATE_CLIENT_ID=$client_id\n" >> .env
 printf "SIPGATE_CLIENT_SECRET=$client_secret\n" >> .env
 printf "SIPGATE_WEBHOOK_URL=$webhook_url\n" >> .env
-printf "SIPGATE_BASE_URL=$auth_base_url\n" >> .env
+printf "\n" >> .env
+printf "SERVICE_URL=$service_url\n" >> .env
 printf "\n" >> .env
 
 printf "MYSQL_HOST=$mysql_host\n" >> .env
