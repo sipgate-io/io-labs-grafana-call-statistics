@@ -2,7 +2,7 @@ import { Connection, createConnection } from "mysql";
 import { AuthCredentials, TokenType } from "./AuthServer";
 
 export interface CallObject {
-  callId: string;
+  callId?: string;
   start?: Date;
   direction?: string;
   callerNumber?: string;
@@ -14,6 +14,7 @@ export interface CallObject {
   answeringNumber?: string;
   hangupCause?: string;
   groupExtension?: string;
+  voicemail?: boolean;
   fake?: boolean;
 }
 
@@ -104,10 +105,11 @@ export default class Database {
     answeringNumber?: string,
     hangupCause?: string,
     groupExtension?: string,
+    voicemail?: boolean,
     fake?: boolean
   ) {
     await this.query(
-      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         callId,
         start,
@@ -121,6 +123,7 @@ export default class Database {
         answeringNumber || null,
         hangupCause || null,
         groupExtension || null,
+        voicemail || false,
         fake || false,
       ]
     );
@@ -133,13 +136,21 @@ export default class Database {
     );
   }
 
-  public async updateCall(callObject: CallObject): Promise<void> {
+  public async updateCall(
+    callId: string,
+    callObject: CallObject
+  ): Promise<void> {
     if (!callObject) {
       throw new Error("callObject undefined or null");
     }
 
     let queryString: string = "UPDATE calls SET ";
     let params = [];
+
+    if (callObject.callId) {
+      queryString += "call_id=?, ";
+      params.push(callObject.callId);
+    }
 
     if (callObject.start) {
       queryString += "start=?, ";
@@ -196,6 +207,11 @@ export default class Database {
       params.push(callObject.groupExtension);
     }
 
+    if (callObject.voicemail) {
+      queryString += "voicemail=?, ";
+      params.push(callObject.voicemail);
+    }
+
     if (callObject.fake) {
       queryString += "fake=?, ";
       params.push(callObject.fake);
@@ -204,7 +220,7 @@ export default class Database {
     queryString = queryString.slice(0, -2);
 
     queryString += " WHERE call_id=?";
-    params.push(callObject.callId);
+    params.push(callId);
 
     await this.query(queryString, params);
   }

@@ -18,6 +18,7 @@ CREATE TABLE calls (
     answering_number VARCHAR(255),
     hangup_cause ENUM('normalClearing', 'busy', 'cancel', 'noAnswer', 'congestion', 'notFound', 'forwarded'),
     group_extension VARCHAR(255) NULL,
+    voicemail BOOLEAN NOT NULL DEFAULT 0,
     fake BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (group_extension) REFERENCES groups(extension) ON UPDATE CASCADE ON DELETE RESTRICT
 );

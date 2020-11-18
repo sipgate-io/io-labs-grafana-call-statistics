@@ -73,8 +73,21 @@ export default class EventHandler {
   ): Promise<void> => {
     console.log(`newCall from ${newCallEvent.from} to ${newCallEvent.to}`);
 
+    if (
+      newCallEvent.users?.length == 1 &&
+      newCallEvent.users[0] == "voicemail"
+    ) {
+      this.database.updateCall(newCallEvent.originalCallId, {
+        callId: newCallEvent.callId,
+        voicemail: true,
+      });
+      return;
+    }
+
     const fullUserId =
-      newCallEvent.fullUserIds.length == 1 ? newCallEvent.fullUserIds[0] : null;
+      newCallEvent.fullUserIds?.length == 1
+        ? newCallEvent.fullUserIds[0]
+        : null;
     const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
 
     this.database.addCall(
@@ -97,8 +110,7 @@ export default class EventHandler {
         groupEndpoint.endpointAlias
       );
 
-      this.database.updateCall({
-        callId: newCallEvent.callId,
+      this.database.updateCall(newCallEvent.callId, {
         groupExtension: groupEndpoint.endpointId,
       });
     }
@@ -110,16 +122,14 @@ export default class EventHandler {
     if (answerEvent.fullUserId) {
       const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
 
-      this.database.updateCall({
-        callId: answerEvent.callId,
+      this.database.updateCall(answerEvent.callId, {
         answeredAt: new Date(),
         calleeMasterSipId: splitUserIdResult.masterSipId,
         calleeExtension: splitUserIdResult.userExtension,
         answeringNumber: answerEvent.answeringNumber,
       });
     } else {
-      this.database.updateCall({
-        callId: answerEvent.callId,
+      this.database.updateCall(answerEvent.callId, {
         answeredAt: new Date(),
         answeringNumber: answerEvent.answeringNumber,
       });
@@ -129,8 +139,7 @@ export default class EventHandler {
   public async handleOnHangUp(hangUpEvent: HangUpEvent) {
     console.log(`hangup from ${hangUpEvent.from} to ${hangUpEvent.to}`);
 
-    this.database.updateCall({
-      callId: hangUpEvent.callId,
+    this.database.updateCall(hangUpEvent.callId, {
       end: new Date(),
       hangupCause: hangUpEvent.cause,
     });
