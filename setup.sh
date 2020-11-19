@@ -65,8 +65,8 @@ read -p "Please enter your sipgate email address: " sipgate_email
 read -s -p "Please enter your password: " sipgate_password
 printf "\n"
 read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
-read -p "Base URL for the authentication service: " service_base_url
-service_base_url=${service_base_url:?You need to provide a base url}
+read -p "Base URL for the authentication service [http://localhost:8080]: " service_base_url
+service_base_url=${service_base_url:-http://localhost:8080}
 
 printf "\n\n"
 
