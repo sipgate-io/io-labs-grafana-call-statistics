@@ -77,11 +77,26 @@ export default class EventHandler {
       newCallEvent.users?.length == 1 &&
       newCallEvent.users[0] == "voicemail"
     ) {
-      this.database.updateCall(newCallEvent.originalCallId, {
-        callId: newCallEvent.callId,
-        voicemail: true,
-      });
-      return;
+      const origCallEvent = await this.database.getCall(newCallEvent.originalCallId);
+      if(origCallEvent.length == 0){
+        await this.database.addCall(
+            newCallEvent.callId,
+            {
+              start: new Date(),
+              direction: newCallEvent.direction,
+              callerNumber: newCallEvent.from,
+              calleeNumber: newCallEvent.to,
+              voicemail: true
+            }
+        );
+
+      }else {
+        await this.database.updateCall(newCallEvent.originalCallId, {
+          callId: newCallEvent.callId,
+          voicemail: true,
+        });
+        return;
+      }
     }
 
     const fullUserId =
@@ -92,12 +107,14 @@ export default class EventHandler {
 
     this.database.addCall(
       newCallEvent.callId,
-      new Date(),
-      newCallEvent.direction,
-      newCallEvent.from,
-      newCallEvent.to,
-      webUserInformation?.masterSipId || null,
-      webUserInformation?.userExtension || null
+        {
+          start: new Date(),
+          direction: newCallEvent.direction,
+          callerNumber: newCallEvent.from,
+          calleeNumber: newCallEvent.to,
+          calleeMasterSipId: webUserInformation?.masterSipId || null,
+          calleeExtension: webUserInformation?.userExtension || null
+        }
     );
 
     const queryNumber =

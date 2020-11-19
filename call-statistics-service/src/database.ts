@@ -92,39 +92,33 @@ export default class Database {
     );
   }
 
+  public async getCall(
+      callId: string,
+  ) {
+    return this.query("SELECT * FROM calls WHERE call_id=?", [callId]);
+  }
+
   public async addCall(
-    callId: string,
-    start: Date,
-    direction: string,
-    callerNumber: string,
-    calleeNumber: string,
-    calleeMasterSipId?: string,
-    calleeExtension?: string,
-    end?: Date,
-    answeredAt?: Date,
-    answeringNumber?: string,
-    hangupCause?: string,
-    groupExtension?: string,
-    voicemail?: boolean,
-    fake?: boolean
+      callId: string,
+      callObject: CallObject
   ) {
     await this.query(
       "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         callId,
-        start,
-        end || null,
-        answeredAt,
-        direction,
-        calleeMasterSipId || null,
-        calleeExtension || null,
-        callerNumber,
-        calleeNumber,
-        answeringNumber || null,
-        hangupCause || null,
-        groupExtension || null,
-        voicemail || false,
-        fake || false,
+        callObject.start || null,
+        callObject.end || null,
+        callObject.answeredAt || null,
+        callObject.direction || null,
+        callObject.calleeMasterSipId || null,
+        callObject.calleeExtension || null,
+        callObject.callerNumber || null,
+        callObject.calleeNumber || null,
+        callObject.answeringNumber || null,
+        callObject.hangupCause || null,
+        callObject.groupExtension || null,
+        callObject.voicemail || false,
+        callObject.fake || false,
       ]
     );
   }
