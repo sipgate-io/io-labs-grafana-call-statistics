@@ -16,7 +16,7 @@ const webhookServerAddress =
 
 const clientId = process.env.SIPGATE_CLIENT_ID;
 const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
-const baseUrl = process.env.SERVICE_URL;
+const baseUrl = process.env.SERVICE_BASE_URL;
 
 if (!clientId || !clientSecret) {
   console.error("Please provide a client ID and client secret");
@@ -24,7 +24,7 @@ if (!clientId || !clientSecret) {
 }
 
 if (!baseUrl) {
-  console.error("Please provide a SERVICE_URL");
+  console.error("Please provide a SERVICE_BASE_URL");
   process.exit(1);
 }
 

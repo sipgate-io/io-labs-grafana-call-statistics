@@ -65,6 +65,8 @@ read -p "Please enter your sipgate email address: " sipgate_email
 read -s -p "Please enter your password: " sipgate_password
 printf "\n"
 read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
+read -p "Base URL for the authentication service: " service_base_url
+service_base_url=${service_base_url:?You need to provide a base url}
 
 printf "\n\n"
 
@@ -85,10 +87,10 @@ read -d '' oauth_client_request << EOF || true
   "name": "Call statistics service",
   "description": "Generated client for call statistics service ($(date))",
   "redirectUris": [
-    "$webhook_url"
+    "$service_base_url/auth-code"
   ],
   "webOrigins": [
-    "$webhook_url"
+    "$service_base_url/auth-code"
   ],
   "privacyUrl": "",
   "termsUrl": ""
@@ -100,8 +102,6 @@ oauth_body=$(make_api_request "POST" "/authorization/oauth2/clients" "$token" "$
 client_id=$(extract_json_value "$oauth_body" "clientId")
 client_secret=$(extract_json_value "$oauth_body" "clientSecret")
 
-read -p "Base URL for the authentication service: " service_url
-service_url=${service_url:?You need to provide a base url}
 read -p "mySQL host [db]: " mysql_host
 mysql_host=${mysql_host:-db}
 read -p "mySQL database [call_statistics]: " mysql_database
@@ -116,7 +116,7 @@ printf "SIPGATE_CLIENT_ID=$client_id\n" >> .env
 printf "SIPGATE_CLIENT_SECRET=$client_secret\n" >> .env
 printf "SIPGATE_WEBHOOK_URL=$webhook_url\n" >> .env
 printf "\n" >> .env
-printf "SERVICE_URL=$service_url\n" >> .env
+printf "SERVICE_BASE_URL=$service_base_url\n" >> .env
 printf "\n" >> .env
 
 printf "MYSQL_HOST=$mysql_host\n" >> .env
