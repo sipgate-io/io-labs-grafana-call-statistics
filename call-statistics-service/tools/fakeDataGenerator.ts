@@ -38,6 +38,7 @@ const answerProbability = 0.9;
 const directionInProbability = 0.9;
 const groupProbability = 0.3;
 const activeCallProbability = 0.001;
+const voicemailProbability = 0.1;
 
 const minAnswerTime = 2000;
 const maxAnswerTime = 8000;
@@ -76,15 +77,20 @@ async function insertFakeGroups(db: any) {
 async function insertFakeData(db: any, time: Date) {
   const callId = Math.floor(Math.random() * 1000000000000).toString();
   const start = time;
-  const direction = Math.random() > directionInProbability ? "in" : "out";
+  const voicemail = Math.random() < voicemailProbability;
+  let direction = voicemail
+    ? "in"
+    : Math.random() > directionInProbability
+    ? "in"
+    : "out";
   const masterSipId = [Math.floor(Math.random() * 100000).toString()];
   const userExtension = "w" + Math.floor(Math.random() * 10);
   const from = "49" + Math.floor(Math.random() * 10000000000).toString();
   const to = "49" + Math.floor(Math.random() * 10000000000).toString();
   const answeringNumber =
     "49" + Math.floor(Math.random() * 10000000000).toString();
-  var hangupCause = hangupCausesWithoutAnswer[Math.floor(Math.random() * 6)];
-  var groupExtension = null;
+  let hangupCause = hangupCausesWithoutAnswer[Math.floor(Math.random() * 6)];
+  let groupExtension = null;
   if (Math.random() < groupProbability) {
     const groupCount = Object.keys(groups).length;
     const randGroupId = Math.floor(Math.random() * groupCount);
@@ -104,8 +110,6 @@ async function insertFakeData(db: any, time: Date) {
       from,
     ]);
   }
-
-  const voicemail = false;
 
   await db.query(
     "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)",
@@ -157,7 +161,7 @@ async function insertFakeData(db: any, time: Date) {
     time.getTime() + minHangupTime + Math.random() * maxHangupTime
   );
 
-  if (Math.random() < activeCallProbability) {
+  if (Math.random() < activeCallProbability && !voicemail) {
     endTime = null;
     hangupCause = null;
   }
