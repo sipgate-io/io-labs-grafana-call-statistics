@@ -105,7 +105,7 @@ export default class EventHandler {
         : null;
     const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
 
-    this.database.addCall(
+    await this.database.addCall(
       newCallEvent.callId,
         {
           start: new Date(),
@@ -122,12 +122,12 @@ export default class EventHandler {
 
     const groupEndpoint = await this.getGroupInformation(queryNumber);
     if (groupEndpoint) {
-      this.database.insertGroup(
+      await this.database.insertGroup(
         groupEndpoint.endpointId,
         groupEndpoint.endpointAlias
       );
 
-      this.database.updateCall(newCallEvent.callId, {
+      await this.database.updateCall(newCallEvent.callId, {
         groupExtension: groupEndpoint.endpointId,
       });
     }
@@ -139,14 +139,14 @@ export default class EventHandler {
     if (answerEvent.fullUserId) {
       const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
 
-      this.database.updateCall(answerEvent.callId, {
+      await this.database.updateCall(answerEvent.callId, {
         answeredAt: new Date(),
         calleeMasterSipId: splitUserIdResult.masterSipId,
         calleeExtension: splitUserIdResult.userExtension,
         answeringNumber: answerEvent.answeringNumber,
       });
     } else {
-      this.database.updateCall(answerEvent.callId, {
+      await this.database.updateCall(answerEvent.callId, {
         answeredAt: new Date(),
         answeringNumber: answerEvent.answeringNumber,
       });
@@ -156,7 +156,7 @@ export default class EventHandler {
   public async handleOnHangUp(hangUpEvent: HangUpEvent) {
     console.log(`hangup from ${hangUpEvent.from} to ${hangUpEvent.to}`);
 
-    this.database.updateCall(hangUpEvent.callId, {
+    await this.database.updateCall(hangUpEvent.callId, {
       end: new Date(),
       hangupCause: hangUpEvent.cause,
     });
