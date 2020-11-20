@@ -1018,7 +1018,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')\nAND not voicemail\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
