@@ -87,8 +87,10 @@ async function insertFakeData(db: any, time: Date) {
     groupExtension = Object.keys(groups)[randGroupId];
   }
 
+  const voicemail = false;
+
   await db.query(
-    "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)",
+    "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)",
     [
       callId,
       start,
@@ -102,6 +104,7 @@ async function insertFakeData(db: any, time: Date) {
       null,
       null,
       groupExtension,
+      voicemail,
     ]
   );
   console.log("inserted call " + callId);
