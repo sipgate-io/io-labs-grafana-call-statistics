@@ -89,8 +89,8 @@ export default class EventHandler {
               voicemail: true
             }
         );
-
-      }else {
+        return;
+      } else {
         await this.database.updateCall(newCallEvent.originalCallId, {
           callId: newCallEvent.callId,
           voicemail: true,
