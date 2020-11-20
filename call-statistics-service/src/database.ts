@@ -92,16 +92,11 @@ export default class Database {
     );
   }
 
-  public async getCall(
-      callId: string,
-  ) {
+  public async getCall(callId: string) {
     return this.query("SELECT * FROM calls WHERE call_id=?", [callId]);
   }
 
-  public async addCall(
-      callId: string,
-      callObject: CallObject
-  ) {
+  public async addCall(callId: string, callObject: CallObject) {
     await this.query(
       "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
@@ -220,18 +215,26 @@ export default class Database {
   }
 
   public async updateTeams(teams: TeamObject[]): Promise<void> {
-    await this.query("TRUNCATE TABLE teams");
+    await this.query("TRUNCATE TABLE teams_numbers");
+
+    await this.query("DELETE FROM teams WHERE 1");
 
     await Promise.all(
-      teams.map((team) => {
+      teams.map(async (team, index) => {
+        await this.query("INSERT INTO teams VALUES(?, ?)", [index, team.name]);
+
         if (team.numbers.length < 2) {
           console.warn(`Team "${team.name}" has less than two members. Skip.`);
           return;
         }
 
         return Promise.all(
-          team.numbers.map((number) =>
-            this.query("INSERT INTO teams VALUES(?, ?)", [team.name, number])
+          team.numbers.map(
+            async (number) =>
+              await this.query("INSERT INTO teams_numbers VALUES(?, ?)", [
+                index,
+                number,
+              ])
           )
         );
       })

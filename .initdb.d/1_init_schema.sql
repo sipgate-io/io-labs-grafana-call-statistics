@@ -34,7 +34,14 @@ CREATE TABLE authentication_params (
     token_value TEXT NOT NULL
 );
 
+
 CREATE TABLE teams (
-    name VARCHAR(255) NOT NULL,
-    number VARCHAR(255) NOT NULL
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE teams_numbers (
+    team_id INTEGER NOT NULL,
+    number VARCHAR(255) NOT NULL,
+    FOREIGN KEY(team_id) REFERENCES teams(id)
 );
