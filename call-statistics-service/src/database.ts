@@ -63,7 +63,7 @@ export default class Database {
     });
   }
 
-  public async readTokensFromDatabase(): Promise<AuthCredentials> {
+  public async readTokensFromDatabase(): Promise<AuthCredentials | null> {
     const authenticationParams: [] = await this.query(
       "SELECT token_type, token_value FROM authentication_params",
       []

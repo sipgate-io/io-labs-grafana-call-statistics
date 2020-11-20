@@ -38,7 +38,17 @@ if (!baseUrl) {
     process.exit(1);
   }
   const database = new Database(db_host, db_user, db_password, db_database);
-  database.updateTeams(teams);
+  await database.updateTeams(teams);
+
+  const tokens = await database.readTokensFromDatabase();
+
+  if (!tokens) {
+    console.error(
+      "Service not authenticated yet. Please visit " +
+        baseUrl +
+        "/auth and follow the link."
+    );
+  }
 
   const webhookModule = createWebhookModule();
 
