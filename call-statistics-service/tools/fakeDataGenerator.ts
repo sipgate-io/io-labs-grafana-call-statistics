@@ -85,10 +85,10 @@ async function insertFakeData(db: any, time: Date) {
     : "out";
   const masterSipId = [Math.floor(Math.random() * 100000).toString()];
   const userExtension = "w" + Math.floor(Math.random() * 10);
-  const from = "49" + Math.floor(Math.random() * 10000000000).toString();
-  const to = "49" + Math.floor(Math.random() * 10000000000).toString();
+  const from = "+49" + Math.floor(Math.random() * 10000000000).toString();
+  const to = "+49" + Math.floor(Math.random() * 10000000000).toString();
   const answeringNumber =
-    "49" + Math.floor(Math.random() * 10000000000).toString();
+    "+49" + Math.floor(Math.random() * 10000000000).toString();
   let hangupCause = hangupCausesWithoutAnswer[Math.floor(Math.random() * 6)];
   let groupExtension = null;
   if (Math.random() < groupProbability) {
