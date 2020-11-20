@@ -1346,6 +1346,81 @@
       "timeShift": null,
       "title": "Most calling numbers ",
       "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "id": 23,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Wartedauer"
+          }
+        ]
+      },
+      "pluginVersion": "7.2.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nWHERE $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.callee_number))\nORDER BY Duration DESC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Longest calls",
+      "type": "table"
     }
   ],
   "refresh": false,
