@@ -10,8 +10,7 @@ import Database from "./database";
 import { isTokenExpired, splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
 import AuthServer from "./AuthServer";
-
-const baseUrl = process.env.SERVICE_BASE_URL;
+import { baseUrl } from "./server";
 
 export default class EventHandler {
   private database: Database;
