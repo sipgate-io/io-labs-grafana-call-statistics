@@ -38,4 +38,3 @@ CREATE TABLE teams (
     name VARCHAR(255) NOT NULL,
     number VARCHAR(255) NOT NULL
 );
-INSERT INTO groups VALUES ("none", "None");

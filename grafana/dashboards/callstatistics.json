@@ -221,7 +221,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NOT NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
+          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NOT NULL AND (\"${groups}\"=\"\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
           "refId": "A",
           "select": [
             [
@@ -247,7 +247,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NULL AND (\"${groups}\"=\"'None'\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
+          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c, groups as g\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NULL AND (\"${groups}\"=\"\" OR c.group_extension=g.extension AND alias REGEXP '${groups:pipe}')",
           "refId": "B",
           "select": [
             [
@@ -1358,15 +1358,16 @@
         "allValue": "",
         "current": {
           "selected": true,
-          "text": "All",
-          "value": "$__all"
+          "tags": [],
+          "text": [],
+          "value": []
         },
         "datasource": "MySQL",
         "definition": "SELECT alias FROM groups;",
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "Groups",
-        "multi": false,
+        "multi": true,
         "name": "groups",
         "options": [],
         "query": "SELECT alias FROM groups;",
