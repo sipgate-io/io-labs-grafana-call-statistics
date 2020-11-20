@@ -10,7 +10,9 @@ const db_password = process.env.MYSQL_PASSWORD;
 const db_database = process.env.MYSQL_DATABASE;
 
 if (!db_host || !db_user || !db_password || !db_database) {
-  console.log("Please provide the environment variables MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD and MYSQL_DATABASE");
+  console.log(
+    "Please provide the environment variables MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD and MYSQL_DATABASE"
+  );
   process.exit(1);
 }
 
@@ -28,6 +30,8 @@ const groups = {
   g001: "Hotline",
   g002: "Marketing",
 };
+
+const teams = ["Sales Example", "Marketing Example", "Management Example"];
 
 const callProbability = 0.7;
 const answerProbability = 0.9;
@@ -85,6 +89,20 @@ async function insertFakeData(db: any, time: Date) {
     const groupCount = Object.keys(groups).length;
     const randGroupId = Math.floor(Math.random() * groupCount);
     groupExtension = Object.keys(groups)[randGroupId];
+  }
+
+  if (direction === "in" && Math.random() > 0.7) {
+    await db.query("INSERT INTO teams_numbers VALUES(?,?)", [
+      Math.floor(Math.random() * teams.length),
+      to,
+    ]);
+  }
+
+  if (direction === "out" && Math.random() > 0.7) {
+    await db.query("INSERT INTO teams_numbers VALUES(?,?)", [
+      Math.floor(Math.random() * teams.length),
+      from,
+    ]);
   }
 
   const voicemail = false;
@@ -167,7 +185,7 @@ async function deleteFakeData(db: any) {
 async function run() {
   const db: Database = new Database(db_host, db_user, db_password, db_database);
   await deleteFakeData(db);
-  await generateFakeData(db, new Date("10/20/2020"), new Date(), 5);
+  await generateFakeData(db, new Date("11/10/2020"), new Date(), 5);
   await db.end();
 }
 
