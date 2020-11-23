@@ -30,8 +30,8 @@ export default class EventHandler {
     if (!authCredentials || !authCredentials.accessToken) {
       console.error(
         "Service not authenticated yet. Please visit " +
-        baseUrl +
-        "/auth and follow the link."
+          baseUrl +
+          "/auth and follow the link."
       );
       return;
     }
@@ -76,18 +76,17 @@ export default class EventHandler {
       newCallEvent.users?.length == 1 &&
       newCallEvent.users[0] == "voicemail"
     ) {
-      const origCallEvent = await this.database.getCall(newCallEvent.originalCallId);
-      if(origCallEvent.length == 0){
-        await this.database.addCall(
-            newCallEvent.callId,
-            {
-              start: new Date(),
-              direction: newCallEvent.direction,
-              callerNumber: newCallEvent.from,
-              calleeNumber: newCallEvent.to,
-              voicemail: true
-            }
-        );
+      const origCallEvent = await this.database.getCall(
+        newCallEvent.originalCallId
+      );
+      if (origCallEvent.length == 0) {
+        await this.database.addCall(newCallEvent.callId, {
+          start: new Date(),
+          direction: newCallEvent.direction,
+          callerNumber: newCallEvent.from,
+          calleeNumber: newCallEvent.to,
+          voicemail: true,
+        });
         return;
       } else {
         await this.database.updateCall(newCallEvent.originalCallId, {
@@ -104,17 +103,14 @@ export default class EventHandler {
         : null;
     const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
 
-    await this.database.addCall(
-      newCallEvent.callId,
-        {
-          start: new Date(),
-          direction: newCallEvent.direction,
-          callerNumber: newCallEvent.from,
-          calleeNumber: newCallEvent.to,
-          calleeMasterSipId: webUserInformation?.masterSipId || null,
-          calleeExtension: webUserInformation?.userExtension || null
-        }
-    );
+    await this.database.addCall(newCallEvent.callId, {
+      start: new Date(),
+      direction: newCallEvent.direction,
+      callerNumber: newCallEvent.from,
+      calleeNumber: newCallEvent.to,
+      calleeMasterSipId: webUserInformation?.masterSipId || null,
+      calleeExtension: webUserInformation?.userExtension || null,
+    });
 
     const queryNumber =
       newCallEvent.direction == "in" ? newCallEvent.to : newCallEvent.from;
