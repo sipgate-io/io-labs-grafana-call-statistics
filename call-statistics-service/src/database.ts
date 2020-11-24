@@ -16,6 +16,7 @@ export interface CallObject {
   groupExtension?: string;
   voicemail?: boolean;
   fake?: boolean;
+  crashed?: boolean;
 }
 
 export interface TeamObject {
@@ -204,6 +205,11 @@ export default class Database {
     if (callObject.fake) {
       queryString += "fake=?, ";
       params.push(callObject.fake);
+    }
+
+    if (callObject.crashed) {
+      queryString += "crashed=?, ";
+      params.push(callObject.crashed);
     }
 
     queryString = queryString.slice(0, -2);

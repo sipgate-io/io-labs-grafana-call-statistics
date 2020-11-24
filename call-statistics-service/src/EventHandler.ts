@@ -139,11 +139,13 @@ export default class EventHandler {
         calleeMasterSipId: splitUserIdResult.masterSipId,
         calleeExtension: splitUserIdResult.userExtension,
         answeringNumber: answerEvent.answeringNumber,
+        crashed: false,
       });
     } else {
       await this.database.updateCall(answerEvent.callId, {
         answeredAt: new Date(),
         answeringNumber: answerEvent.answeringNumber,
+        crashed: false,
       });
     }
   }
@@ -154,6 +156,7 @@ export default class EventHandler {
     await this.database.updateCall(hangUpEvent.callId, {
       end: new Date(),
       hangupCause: hangUpEvent.cause,
+      crashed: false,
     });
   }
 }
