@@ -112,7 +112,7 @@ async function insertFakeData(db: any, time: Date) {
   }
 
   await db.query(
-    "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)",
+    "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true, false)",
     [
       callId,
       start,

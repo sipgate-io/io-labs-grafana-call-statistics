@@ -240,4 +240,8 @@ export default class Database {
       })
     );
   }
+  public async crashCheck() {
+    let queryString: string = "UPDATE calls SET crashed=1 WHERE end IS NULL";
+    await this.query(queryString);
+  }
 }

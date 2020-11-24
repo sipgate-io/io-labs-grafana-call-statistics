@@ -39,6 +39,7 @@ if (!baseUrl) {
   }
   const database = new Database(db_host, db_user, db_password, db_database);
   await database.updateTeams(teams);
+  await database.crashCheck();
 
   const tokens = await database.readTokensFromDatabase();
 
