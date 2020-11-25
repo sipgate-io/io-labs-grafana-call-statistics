@@ -14,3 +14,15 @@ If you are a **sipgate team** user logged in with an admin account you can find 
 ## Install required tools
 
 The project relies on Docker Compose. Thatfore a Docker installation is required. Please follow the instructions on the [Get Docker](https://docs.docker.com/get-docker/) instructions for your dedicated system and the [Install Docker Compose](https://docs.docker.com/compose/install/) respectively. After that your system is ready tohost multiple virtual containers as multi-container application.
+
+## Developing
+
+For easy developing there is a Makefile with short commands to start/end the containers and populate them with fake data:
+
+```bash
+make up         # uses docker-compose up to start the server
+make fakedata   # calls npm run fakeDataGenerator with the required environment variables
+make down       # uses docker-compose down to shut down the server (does not delete volumes)
+make purge      # removes all docker volumes
+make build      # recreates the docker images and starts them
+```

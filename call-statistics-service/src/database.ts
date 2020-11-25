@@ -18,6 +18,23 @@ export interface CallObject {
   fake?: boolean;
   crashed?: boolean;
 }
+const callObjectDictionary = {
+  callId: "call_id",
+  start: "start",
+  direction: "direction",
+  caller_number: "caller_number",
+  callee_number: "callee_number",
+  calleeMasterSipId: "callee_mastersip_id",
+  calleeExtension: "callee_extension",
+  end: "end",
+  answeredAt: "answered_at",
+  answeringNumber: "answering_number",
+  hangupCause: "hangup_cause",
+  groupExtension: "group_extension",
+  voicemail: "voicemail",
+  fake: "fake",
+  crashed: "crashed",
+};
 
 export interface TeamObject {
   name: string;
@@ -99,7 +116,7 @@ export default class Database {
 
   public async addCall(callId: string, callObject: CallObject) {
     await this.query(
-      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         callId,
         callObject.start || null,
@@ -115,6 +132,7 @@ export default class Database {
         callObject.groupExtension || null,
         callObject.voicemail || false,
         callObject.fake || false,
+        callObject.crashed || false,
       ]
     );
   }
@@ -130,88 +148,14 @@ export default class Database {
     callId: string,
     callObject: CallObject
   ): Promise<void> {
-    if (!callObject) {
-      throw new Error("callObject undefined or null");
-    }
-
     let queryString: string = "UPDATE calls SET ";
     let params = [];
-
-    if (callObject.callId) {
-      queryString += "call_id=?, ";
-      params.push(callObject.callId);
+    for (const attribute in callObject) {
+      queryString += `${callObjectDictionary[attribute]}=?, `;
+      params.push(callObject[attribute]);
     }
 
-    if (callObject.start) {
-      queryString += "start=?, ";
-      params.push(callObject.start);
-    }
-
-    if (callObject.direction) {
-      queryString += "direction=?, ";
-      params.push(callObject.direction);
-    }
-
-    if (callObject.callerNumber) {
-      queryString += "caller_number=?, ";
-      params.push(callObject.callerNumber);
-    }
-
-    if (callObject.calleeNumber) {
-      queryString += "callee_number=?, ";
-      params.push(callObject.calleeNumber);
-    }
-
-    if (callObject.calleeMasterSipId) {
-      queryString += "callee_mastersip_id=?, ";
-      params.push(callObject.calleeMasterSipId);
-    }
-
-    if (callObject.calleeExtension) {
-      queryString += "callee_extension=?, ";
-      params.push(callObject.calleeExtension);
-    }
-
-    if (callObject.end) {
-      queryString += "end=?, ";
-      params.push(callObject.end);
-    }
-
-    if (callObject.answeredAt) {
-      queryString += "answered_at=?, ";
-      params.push(callObject.answeredAt);
-    }
-
-    if (callObject.answeringNumber) {
-      queryString += "answering_number=?, ";
-      params.push(callObject.answeringNumber);
-    }
-
-    if (callObject.hangupCause) {
-      queryString += "hangup_cause=?, ";
-      params.push(callObject.hangupCause);
-    }
-
-    if (callObject.groupExtension) {
-      queryString += "group_extension=?, ";
-      params.push(callObject.groupExtension);
-    }
-
-    if (callObject.voicemail) {
-      queryString += "voicemail=?, ";
-      params.push(callObject.voicemail);
-    }
-
-    if (callObject.fake) {
-      queryString += "fake=?, ";
-      params.push(callObject.fake);
-    }
-
-    if (callObject.crashed) {
-      queryString += "crashed=?, ";
-      params.push(callObject.crashed);
-    }
-
+    // remove the last trailing comma
     queryString = queryString.slice(0, -2);
 
     queryString += " WHERE call_id=?";
@@ -250,7 +194,8 @@ export default class Database {
     );
   }
   public async crashCheck() {
-    let queryString: string = "UPDATE calls SET crashed=1 WHERE end IS NULL;";
+    let queryString: string =
+      "UPDATE calls SET crashed=true WHERE end IS NULL;";
     await this.query(queryString);
   }
 }
