@@ -46,7 +46,7 @@ const minHangupTime = 12000;
 const maxHangupTime = 30000;
 
 async function generateFakeData(
-  db: any,
+  db: Database,
   from: Date,
   to: Date,
   stepMinutes: number = 60
@@ -54,7 +54,7 @@ async function generateFakeData(
   await insertFakeGroups(db);
 
   for (
-    var d = from.getTime();
+    let d = from.getTime();
     d <= to.getTime();
     d += stepMinutes * 1000 * 60
   ) {
@@ -78,11 +78,7 @@ async function insertFakeData(db: any, time: Date) {
   const callId = Math.floor(Math.random() * 1000000000000).toString();
   const start = time;
   const voicemail = Math.random() < voicemailProbability;
-  let direction = voicemail
-    ? "in"
-    : Math.random() > directionInProbability
-    ? "in"
-    : "out";
+  let direction = (voicemail || Math.random() > directionInProbability) ? "in" : "out";
   const masterSipId = [Math.floor(Math.random() * 100000).toString()];
   const userExtension = "w" + Math.floor(Math.random() * 10);
   const from = "+49" + Math.floor(Math.random() * 10000000000).toString();
@@ -176,14 +172,10 @@ async function insertFakeData(db: any, time: Date) {
 }
 
 async function deleteFakeData(db: any) {
-  try {
-    await db.query("DELETE FROM calls WHERE fake = true");
-    console.log("deleted all fake calls");
-    await db.query("DELETE FROM groups WHERE extension LIKE 'g00%'");
-    console.log("deleted all fake groups");
-  } catch (e) {
-    console.error(e);
-  }
+  await db.query("DELETE FROM calls WHERE fake = true");
+  console.log("deleted all fake calls");
+  await db.query("DELETE FROM groups WHERE extension LIKE 'g00%'");
+  console.log("deleted all fake groups");
 }
 
 async function run() {
@@ -193,4 +185,4 @@ async function run() {
   await db.end();
 }
 
-run();
+run().catch(console.error);
