@@ -6,7 +6,7 @@ import {
   createNumbersModule,
   SipgateIOClient,
 } from "sipgateio";
-import Database from "./database";
+import Database from "./Database";
 import { isTokenExpired, splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
 import AuthServer from "./AuthServer";

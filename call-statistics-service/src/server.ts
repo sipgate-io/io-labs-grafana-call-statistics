@@ -1,7 +1,7 @@
 import { createWebhookModule } from "sipgateio";
 import EventHandler from "./EventHandler";
 import AuthServer, { AUTHENTICATION_CODE_ENDPOINT } from "./AuthServer";
-import Database, { TeamObject } from "./database";
+import Database, { TeamObject } from "./Database";
 import { readFile } from "./utils";
 
 // as specified in the docker-compose.yml

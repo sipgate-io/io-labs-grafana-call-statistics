@@ -44,19 +44,9 @@ export interface TeamObject {
 }
 
 export default class Database {
-  private host: string;
-  private user: string;
-  private password: string;
-  private database: string;
-
   private connection: Connection;
 
   constructor(host: string, user: string, password: string, database: string) {
-    this.host = host;
-    this.user = user;
-    this.password = password;
-    this.database = database;
-
     this.connection = createConnection({
       host,
       user,

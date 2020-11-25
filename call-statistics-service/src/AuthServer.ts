@@ -2,7 +2,7 @@ import axios from "axios";
 import * as querystring from "querystring";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { schedule } from "node-cron";
-import Database from "./database";
+import Database from "./Database";
 import { readFile } from "./utils";
 
 export type ParsedUrl = {
