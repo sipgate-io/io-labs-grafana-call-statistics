@@ -99,7 +99,7 @@ export default class Database {
 
   public async addCall(callId: string, callObject: CallObject) {
     await this.query(
-      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO calls VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         callId,
         callObject.start || null,
@@ -115,6 +115,7 @@ export default class Database {
         callObject.groupExtension || null,
         callObject.voicemail || false,
         callObject.fake || false,
+        callObject.crashed || false,
       ]
     );
   }
