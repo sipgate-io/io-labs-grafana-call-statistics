@@ -1,5 +1,4 @@
-import Database from "../src/database";
-import { promisify } from "util";
+import Database from "../src/Database";
 
 // https://developer.sipgate.io/push-api/api-reference/#onhangup
 const hangupCauseWithAnswer = "normalClearing";
