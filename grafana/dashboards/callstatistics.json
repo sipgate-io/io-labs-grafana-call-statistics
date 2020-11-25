@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606222834851,
+  "iteration": 1606293608914,
   "links": [],
   "panels": [
     {
@@ -54,7 +54,9 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": ["mean"],
+          "calcs": [
+            "mean"
+          ],
           "fields": "",
           "values": false
         },
@@ -72,7 +74,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -94,32 +98,14 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
-      "cacheTimeout": null,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": null,
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "custom": {},
+          "unit": "s"
         },
         "overrides": []
       },
@@ -132,8 +118,7 @@
         "y": 0
       },
       "hiddenSeries": false,
-      "id": 8,
-      "interval": null,
+      "id": 2,
       "legend": {
         "avg": false,
         "current": false,
@@ -143,9 +128,8 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
-      "links": [],
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -165,65 +149,21 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\ncount(*) as \"total\"\nFROM calls as c\nWHERE (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE (number=c.caller_number or number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c\nWHERE (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE (number=c.caller_number or number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "fake"
+                ],
                 "type": "column"
               }
             ]
           ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"incoming\"\nFROM calls as c\nWHERE direction='in'\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.callee_number))\nGROUP BY 1\nORDER BY 1",
-          "refId": "B",
-          "select": [
-            [
-              {
-                "params": ["value"],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"outgoing\"\nFROM calls as c\nWHERE direction='out'\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.caller_number))\nGROUP BY 1\nORDER BY 1\n\n",
-          "refId": "C",
-          "select": [
-            [
-              {
-                "params": ["value"],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
+          "table": "calls",
+          "timeColumn": "answered_at",
+          "timeColumnType": "datetime",
           "where": [
             {
               "name": "$__timeFilter",
@@ -237,7 +177,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "total calls",
+      "title": "mean call answer time",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -253,8 +193,8 @@
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "s",
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -315,7 +255,9 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": ["mean"],
+          "calcs": [
+            "mean"
+          ],
           "fields": "",
           "values": false
         },
@@ -333,7 +275,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -376,7 +320,32 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "caller"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "callee"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -384,15 +353,9 @@
         "x": 12,
         "y": 8
       },
-      "id": 25,
+      "id": 27,
       "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "crashed"
-          }
-        ]
+        "showHeader": true
       },
       "pluginVersion": "7.2.1",
       "targets": [
@@ -401,12 +364,14 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT start AS \"time\", callee_number AS \"number of callee\", caller_number AS \"number of caller\"\nFROM calls\nWHERE crashed=1\nORDER BY start DESC\nLIMIT 10",
+          "rawSql": "SELECT start as \"time\", caller_number as \"caller\", callee_number as \"callee\"\nFROM calls c\nWHERE c.crashed=0 AND c.answered_at IS NOT NULL AND \n      c.end IS NULL\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE (number=c.caller_number or number=c.callee_number)));",
           "refId": "A",
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -423,7 +388,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "crashed calls",
+      "title": "active call numbers",
       "type": "table"
     },
     {
@@ -473,7 +438,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -497,7 +464,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -565,7 +534,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -589,7 +560,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -612,14 +585,32 @@
     },
     {
       "aliasColors": {},
-      "bars": true,
+      "bars": false,
+      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "unit": "s"
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -632,7 +623,8 @@
         "y": 16
       },
       "hiddenSeries": false,
-      "id": 2,
+      "id": 8,
+      "interval": null,
       "legend": {
         "avg": false,
         "current": false,
@@ -642,8 +634,9 @@
         "total": false,
         "values": false
       },
-      "lines": false,
+      "lines": true,
       "linewidth": 1,
+      "links": [],
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -663,19 +656,71 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c\nWHERE (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE (number=c.caller_number or number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\ncount(*) as \"total\"\nFROM calls as c\nWHERE (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE (number=c.caller_number or number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
-                "params": ["fake"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
           ],
-          "table": "calls",
-          "timeColumn": "answered_at",
-          "timeColumnType": "datetime",
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"incoming\"\nFROM calls as c\nWHERE direction='in'\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.callee_number))\nGROUP BY 1\nORDER BY 1",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"outgoing\"\nFROM calls as c\nWHERE direction='out'\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.caller_number))\nGROUP BY 1\nORDER BY 1\n\n",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
           "where": [
             {
               "name": "$__timeFilter",
@@ -689,7 +734,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "mean call answer time",
+      "title": "total calls",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -705,8 +750,8 @@
       },
       "yaxes": [
         {
-          "format": "s",
-          "label": "",
+          "format": "short",
+          "label": null,
           "logBase": 1,
           "max": null,
           "min": null,
@@ -785,7 +830,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -809,7 +856,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -923,7 +972,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -1038,7 +1089,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -1062,7 +1115,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -1121,13 +1176,15 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "center",
-            "filterable": false
-          },
+          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1141,82 +1198,7 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "string"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Number"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
           }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 32
-      },
-      "id": 21,
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Wartedauer"
-          }
-        ]
-      },
-      "pluginVersion": "7.2.1",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nWHERE $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.callee_number))\nORDER BY Duration DESC\nLIMIT 5",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": ["value"],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Longest waiting numbers",
-      "type": "table"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
         },
         "overrides": []
       },
@@ -1225,8 +1207,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 40
+        "x": 12,
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 19,
@@ -1239,7 +1221,7 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -1265,7 +1247,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -1362,7 +1346,7 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
+        "x": 0,
         "y": 40
       },
       "id": 23,
@@ -1387,7 +1371,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -1405,6 +1391,95 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Longest calls",
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "string"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Number"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "id": 21,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Wartedauer"
+          }
+        ]
+      },
+      "pluginVersion": "7.2.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nWHERE $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nAND (\"${groups}\"=\"\" OR c.group_extension in (SELECT extension from groups WHERE alias REGEXP '${groups:pipe}'))\nAND (\"${teams}\"=\"\" OR EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and teams.name REGEXP '${teams:pipe}' WHERE number=c.callee_number))\nORDER BY Duration DESC\nLIMIT 5",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Longest waiting numbers",
       "type": "table"
     },
     {
@@ -1473,7 +1548,9 @@
           "select": [
             [
               {
-                "params": ["value"],
+                "params": [
+                  "value"
+                ],
                 "type": "column"
               }
             ]
@@ -1491,6 +1568,81 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Most calling numbers ",
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      },
+      "id": 25,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "crashed"
+          }
+        ]
+      },
+      "pluginVersion": "7.2.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT start AS \"time\", callee_number AS \"number of callee\", caller_number AS \"number of caller\"\nFROM calls\nWHERE crashed=1\nORDER BY start DESC\nLIMIT 10",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "crashed calls",
       "type": "table"
     }
   ],
@@ -1557,7 +1709,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "1d",
           "value": "1d"
         },
@@ -1618,5 +1770,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 2
+  "version": 5
 }
