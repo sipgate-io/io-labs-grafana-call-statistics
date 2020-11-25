@@ -18,6 +18,25 @@ export interface CallObject {
   fake?: boolean;
   crashed?: boolean;
 }
+const callObjectDictionary = {
+  callId: "call_id",
+  start: "start",
+  direction: "direction",
+  caller_number: "caller_number",
+  callee_number: "callee_number",
+  calleeMasterSipId: "callee_mastersip_id",
+  calleeExtension: "callee_extension",
+  end: "end",
+  answeredAt: "answered_at",
+  answeringNumber: "answering_number",
+  hangupCause: "hangup_cause",
+  groupExtension: "group_extension",
+  voicemail: "voicemail",
+  fake: "fake",
+  crashed: "crashed",
+};
+
+
 
 export interface TeamObject {
   name: string;
@@ -127,39 +146,18 @@ export default class Database {
     );
   }
 
-  private callObjectDictionary = {
-    callId: "call_id",
-    start: "start",
-    direction: "direction",
-    caller_number: "caller_number",
-    callee_number: "callee_number",
-    calleeMasterSipId: "callee_mastersip_id",
-    calleeExtension: "callee_extension",
-    end: "end",
-    answeredAt: "answered_at",
-    answeringNumber: "answering_number",
-    hangupCause: "hangup_cause",
-    groupExtension: "group_extension",
-    voicemail: "voicemail",
-    fake: "fake",
-    crashed: "crashed",
-  };
-
   public async updateCall(
     callId: string,
     callObject: CallObject
   ): Promise<void> {
-    if (!callObject) {
-      throw new Error("callObject undefined or null");
-    }
-
     let queryString: string = "UPDATE calls SET ";
     let params = [];
-    Object.keys(callObject).forEach((key) => {
-      queryString += `${this.callObjectDictionary[key]}=?, `;
-      params.push(callObject[key]);
-    });
+    for (const attribute in callObject) {
+      queryString += `${callObjectDictionary[attribute]}=?, `;
+      params.push(callObject[attribute]);
+    }
 
+    // remove the last trailing comma
     queryString = queryString.slice(0, -2);
 
     queryString += " WHERE call_id=?";
