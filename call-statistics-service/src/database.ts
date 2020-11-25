@@ -222,8 +222,8 @@ export default class Database {
 
   public async updateTeams(teams: TeamObject[]): Promise<void> {
     await this.query("TRUNCATE TABLE teams_numbers");
-
-    await this.query("DELETE FROM teams WHERE 1");
+    // we cannot truncate here since we are dealing with foreign keys
+    await this.query("DELETE FROM teams");
 
     await Promise.all(
       teams.map(async (team, index) => {
@@ -247,7 +247,8 @@ export default class Database {
     );
   }
   public async crashCheck() {
-    let queryString: string = "UPDATE calls SET crashed=1 WHERE end IS NULL;";
+    let queryString: string =
+      "UPDATE calls SET crashed=true WHERE end IS NULL;";
     await this.query(queryString);
   }
 }
