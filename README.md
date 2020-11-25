@@ -23,4 +23,6 @@ For easy developing there is a Makefile with short commands to start/end the con
 make up         # uses docker-compose up to start the server
 make fakedata   # calls npm run fakeDataGenerator with the required environment variables
 make down       # uses docker-compose down to shut down the server (does not delete volumes)
+make purge      # removes all docker volumes
+make build      # recreates the docker images and starts them
 ```
