@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606293608914,
+  "iteration": 1606297713553,
   "links": [],
   "panels": [
     {
@@ -1655,24 +1655,23 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
-          "tags": [],
-          "text": [],
-          "value": []
+          "selected": false,
+          "text": "Hotline",
+          "value": "Hotline"
         },
         "datasource": "MySQL",
-        "definition": "SELECT alias FROM groups;",
+        "definition": "SELECT alias FROM groups ORDER BY field(alias, 'Other') ASC, alias;",
         "hide": 0,
         "includeAll": false,
         "label": "Groups",
         "multi": true,
         "name": "groups",
         "options": [],
-        "query": "SELECT alias FROM groups;",
+        "query": "SELECT alias FROM groups ORDER BY field(alias, 'Other') ASC, alias;",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 1,
+        "sort": 0,
         "tagValuesQuery": "",
         "tags": [],
         "tagsQuery": "",
@@ -1684,22 +1683,26 @@
         "current": {
           "selected": true,
           "tags": [],
-          "text": [],
-          "value": []
+          "text": [
+            "Management Example"
+          ],
+          "value": [
+            "Management Example"
+          ]
         },
         "datasource": "MySQL",
-        "definition": "SELECT name FROM teams;",
+        "definition": "SELECT name FROM teams ORDER BY field(name, 'Other') ASC, name;",
         "hide": 0,
         "includeAll": false,
         "label": "Teams",
         "multi": true,
         "name": "teams",
         "options": [],
-        "query": "SELECT name FROM teams;",
+        "query": "SELECT name FROM teams ORDER BY field(name, 'Other') ASC, name;",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 1,
+        "sort": 0,
         "tagValuesQuery": "",
         "tags": [],
         "tagsQuery": "",
@@ -1770,5 +1773,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 5
+  "version": 3
 }

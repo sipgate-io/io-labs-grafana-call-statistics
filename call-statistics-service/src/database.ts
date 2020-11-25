@@ -223,11 +223,14 @@ export default class Database {
   public async updateTeams(teams: TeamObject[]): Promise<void> {
     await this.query("TRUNCATE TABLE teams_numbers");
 
-    await this.query("DELETE FROM teams WHERE 1");
+    await this.query("DELETE FROM teams WHERE id > 0");
 
     await Promise.all(
       teams.map(async (team, index) => {
-        await this.query("INSERT INTO teams VALUES(?, ?)", [index, team.name]);
+        await this.query("INSERT INTO teams VALUES(?, ?)", [
+          index + 1,
+          team.name,
+        ]);
 
         if (team.numbers.length < 2) {
           console.warn(`Team "${team.name}" has less than two members. Skip.`);
@@ -238,7 +241,7 @@ export default class Database {
           team.numbers.map(
             async (number) =>
               await this.query("INSERT INTO teams_numbers VALUES(?, ?)", [
-                index,
+                index + 1,
                 number,
               ])
           )
