@@ -127,6 +127,24 @@ export default class Database {
     );
   }
 
+  private callObjectDictionary = {
+    callId: "call_id",
+    start: "start",
+    direction: "direction",
+    caller_number: "caller_number",
+    callee_number: "callee_number",
+    calleeMasterSipId: "callee_mastersip_id",
+    calleeExtension: "callee_extension",
+    end: "end",
+    answeredAt: "answered_at",
+    answeringNumber: "answering_number",
+    hangupCause: "hangup_cause",
+    groupExtension: "group_extension",
+    voicemail: "voicemail",
+    fake: "fake",
+    crashed: "crashed",
+  };
+
   public async updateCall(
     callId: string,
     callObject: CallObject
@@ -137,81 +155,10 @@ export default class Database {
 
     let queryString: string = "UPDATE calls SET ";
     let params = [];
-
-    if (callObject.callId) {
-      queryString += "call_id=?, ";
-      params.push(callObject.callId);
-    }
-
-    if (callObject.start) {
-      queryString += "start=?, ";
-      params.push(callObject.start);
-    }
-
-    if (callObject.direction) {
-      queryString += "direction=?, ";
-      params.push(callObject.direction);
-    }
-
-    if (callObject.callerNumber) {
-      queryString += "caller_number=?, ";
-      params.push(callObject.callerNumber);
-    }
-
-    if (callObject.calleeNumber) {
-      queryString += "callee_number=?, ";
-      params.push(callObject.calleeNumber);
-    }
-
-    if (callObject.calleeMasterSipId) {
-      queryString += "callee_mastersip_id=?, ";
-      params.push(callObject.calleeMasterSipId);
-    }
-
-    if (callObject.calleeExtension) {
-      queryString += "callee_extension=?, ";
-      params.push(callObject.calleeExtension);
-    }
-
-    if (callObject.end) {
-      queryString += "end=?, ";
-      params.push(callObject.end);
-    }
-
-    if (callObject.answeredAt) {
-      queryString += "answered_at=?, ";
-      params.push(callObject.answeredAt);
-    }
-
-    if (callObject.answeringNumber) {
-      queryString += "answering_number=?, ";
-      params.push(callObject.answeringNumber);
-    }
-
-    if (callObject.hangupCause) {
-      queryString += "hangup_cause=?, ";
-      params.push(callObject.hangupCause);
-    }
-
-    if (callObject.groupExtension) {
-      queryString += "group_extension=?, ";
-      params.push(callObject.groupExtension);
-    }
-
-    if (callObject.voicemail) {
-      queryString += "voicemail=?, ";
-      params.push(callObject.voicemail);
-    }
-
-    if (callObject.fake) {
-      queryString += "fake=?, ";
-      params.push(callObject.fake);
-    }
-
-    if (callObject.crashed) {
-      queryString += "crashed=?, ";
-      params.push(callObject.crashed);
-    }
+    Object.keys(callObject).forEach((key) => {
+      queryString += `${this.callObjectDictionary[key]}=?, `;
+      params.push(callObject[key]);
+    });
 
     queryString = queryString.slice(0, -2);
 
