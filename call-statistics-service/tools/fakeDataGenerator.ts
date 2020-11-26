@@ -36,7 +36,7 @@ const callProbability = 0.7;
 const answerProbability = 0.9;
 const directionInProbability = 0.9;
 const groupProbability = 0.3;
-const activeCallProbability = 0.001;
+const activeCallProbability = 0.05;
 const voicemailProbability = 0.1;
 
 const minAnswerTime = 2000;
@@ -94,14 +94,14 @@ async function insertFakeData(db: any, time: Date) {
 
   if (direction === "in" && Math.random() > 0.7) {
     await db.query("INSERT INTO teams_numbers VALUES(?,?)", [
-      Math.floor(Math.random() * teams.length),
+      Math.floor(Math.random() * teams.length) + 1,
       to,
     ]);
   }
 
   if (direction === "out" && Math.random() > 0.7) {
     await db.query("INSERT INTO teams_numbers VALUES(?,?)", [
-      Math.floor(Math.random() * teams.length),
+      Math.floor(Math.random() * teams.length) + 1,
       from,
     ]);
   }

@@ -40,3 +40,6 @@ CREATE TABLE teams_numbers (
     number VARCHAR(255) NOT NULL,
     FOREIGN KEY(team_id) REFERENCES teams(id)
 );
+
+INSERT INTO groups VALUES('other', 'Other');
+INSERT INTO teams VALUES(0, 'Other');

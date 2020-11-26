@@ -36,8 +36,6 @@ const callObjectDictionary = {
   crashed: "crashed",
 };
 
-
-
 export interface TeamObject {
   name: string;
   numbers: string[];
@@ -158,12 +156,15 @@ export default class Database {
 
   public async updateTeams(teams: TeamObject[]): Promise<void> {
     await this.query("TRUNCATE TABLE teams_numbers");
-    // we cannot truncate here since we are dealing with foreign keys
-    await this.query("DELETE FROM teams");
+
+    await this.query("DELETE FROM teams WHERE id > 0");
 
     await Promise.all(
       teams.map(async (team, index) => {
-        await this.query("INSERT INTO teams VALUES(?, ?)", [index, team.name]);
+        await this.query("INSERT INTO teams VALUES(?, ?)", [
+          index + 1,
+          team.name,
+        ]);
 
         if (team.numbers.length < 2) {
           console.warn(`Team "${team.name}" has less than two members. Skip.`);
@@ -174,7 +175,7 @@ export default class Database {
           team.numbers.map(
             async (number) =>
               await this.query("INSERT INTO teams_numbers VALUES(?, ?)", [
-                index,
+                index + 1,
                 number,
               ])
           )
