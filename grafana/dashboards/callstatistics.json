@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606380252708,
+  "iteration": 1606380704391,
   "links": [],
   "panels": [
     {
@@ -69,7 +69,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT count(*)\nFROM calls c\nWHERE c.crashed=0 AND c.answered_at IS NULL AND\n      c.hangup_cause IS NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))));",
+          "rawSql": "SELECT count(*)\nFROM calls c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND c.crashed=0 AND c.answered_at IS NULL AND c.hangup_cause IS NULL;",
           "refId": "A",
           "select": [
             [
@@ -270,7 +270,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT count(*)\nFROM calls c\nWHERE c.crashed=0 AND c.answered_at IS NOT NULL AND \n      c.end IS NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))));",
+          "rawSql": "SELECT count(*)\nFROM calls c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND c.crashed=0 AND c.answered_at IS NOT NULL AND c.end IS NULL;",
           "refId": "A",
           "select": [
             [
@@ -435,7 +435,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NOT NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.caller_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.caller_number)));",
+          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND direction=\"out\" AND answered_at IS NOT NULL;",
           "refId": "A",
           "select": [
             [
@@ -461,7 +461,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c\nWHERE $__timeFilter(start) AND direction=\"out\" AND answered_at IS NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.caller_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.caller_number)));",
+          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND direction=\"out\" AND answered_at IS NULL;",
           "refId": "B",
           "select": [
             [
@@ -531,7 +531,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nWHERE $__timeFilter(start) AND direction=\"in\" AND answered_at IS NOT NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)));",
+          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND direction=\"in\" AND answered_at IS NOT NULL;",
           "refId": "A",
           "select": [
             [
@@ -557,7 +557,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c\nWHERE $__timeFilter(start) AND direction=\"in\" AND answered_at IS NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)));",
+          "rawSql": "SELECT\n  0 as time,\n  count(DISTINCT call_id) as \"unanswered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND direction=\"in\" AND answered_at IS NULL;",
           "refId": "B",
           "select": [
             [
@@ -658,7 +658,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\ncount(*) as \"total\"\nFROM calls as c\nWHERE (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\ncount(*) as \"total\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -684,7 +684,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"incoming\"\nFROM calls as c\nWHERE direction='in'\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"incoming\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in'\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -710,7 +710,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"outgoing\"\nFROM calls as c\nWHERE direction='out'\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.caller_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.caller_number)))\nGROUP BY 1\nORDER BY 1\n\n",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"outgoing\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out'\nGROUP BY 1\nORDER BY 1\n\n",
           "refId": "C",
           "select": [
             [
@@ -827,7 +827,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nWHERE direction='out' AND answered_at IS NOT NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.caller_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.caller_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out' AND answered_at IS NOT NULL\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -853,7 +853,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nWHERE direction='out' AND answered_at IS NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.caller_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.caller_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out' AND answered_at IS NULL\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -969,7 +969,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c\nWHERE $__timeFilter(start) AND answered_at IS NOT NULL\nAND not voicemail\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND answered_at IS NOT NULL\nAND not voicemail\nGROUP BY 1\nORDER BY 1;",
           "refId": "A",
           "select": [
             [
@@ -1086,7 +1086,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nWHERE direction='in' AND answered_at IS NOT NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in' AND answered_at IS NOT NULL\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -1112,7 +1112,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nWHERE direction='in' AND answered_at IS NULL \nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in' AND answered_at IS NULL \nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -1244,7 +1244,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\ncount(*) as \"total\"\nFROM calls as c\nWHERE voicemail\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))))\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\ncount(*) as \"total\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND voicemail\nGROUP BY 1\nORDER BY 1;",
           "refId": "A",
           "select": [
             [
@@ -1380,7 +1380,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as \"Caller\",\n  callee_number as \"Callee\",\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nWHERE $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))))\nORDER BY Duration DESC\nLIMIT 5",
+          "rawSql": "SELECT\n  caller_number as \"Caller\",\n  callee_number as \"Callee\",\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
           "refId": "A",
           "select": [
             [
@@ -1469,7 +1469,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nWHERE $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)))\nORDER BY Duration DESC\nLIMIT 5",
+          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
           "refId": "A",
           "select": [
             [
@@ -1557,7 +1557,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as Number,\n  count(*) as Count\nFROM calls as c\nWHERE $__timeFilter(start)\nAND direction = \"in\"\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE number=c.callee_number) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE number=c.callee_number)))\ngroup by caller_number\nORDER BY count desc\nLIMIT 5",
+          "rawSql": "SELECT\n  caller_number as Number,\n  count(*) as Count\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND direction = \"in\"\ngroup by caller_number\nORDER BY count desc\nLIMIT 20",
           "refId": "A",
           "select": [
             [
@@ -1706,7 +1706,8 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
+          "tags": [],
           "text": [
             "Management Example",
             "Marketing Example",
@@ -1803,5 +1804,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 6
+  "version": 25
 }
