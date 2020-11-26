@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606379070936,
+  "iteration": 1606380252708,
   "links": [],
   "panels": [
     {
@@ -366,7 +366,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT start as \"time\", caller_number as \"caller\", callee_number as \"callee\"\nFROM calls c\nWHERE c.crashed=0 AND c.answered_at IS NOT NULL AND \n      c.end IS NULL\nAND (c.group_extension in (SELECT extension from groups WHERE '${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (EXISTS (SELECT number from teams_numbers join teams on teams.id = team_id and '${teams:pipe}' REGEXP teams.name WHERE (number=c.caller_number or number=c.callee_number)) or\n('${teams:pipe}' REGEXP \"Other\" and NOT EXISTS (SELECT number from teams_numbers WHERE (number=c.caller_number or number=c.callee_number))));",
+          "rawSql": "SELECT start as \"time\", caller_number as \"caller\", callee_number as \"callee\"\nFROM calls c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND c.crashed=0 AND c.answered_at IS NOT NULL AND c.end IS NULL",
           "refId": "A",
           "select": [
             [
@@ -1706,8 +1706,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
-          "tags": [],
+          "selected": false,
           "text": [
             "Management Example",
             "Marketing Example",
@@ -1804,5 +1803,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 4
+  "version": 6
 }
