@@ -30,19 +30,76 @@ const groups = {
   g002: "Marketing",
 };
 
+const enum Day {
+  Sunday,
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+}
+
 const teams = ["Sales Example", "Marketing Example", "Management Example"];
 
-const callProbability = 0.7;
-const answerProbability = 0.9;
-const directionInProbability = 0.9;
-const groupProbability = 0.3;
-const activeCallProbability = 0.05;
-const voicemailProbability = 0.1;
+const distrib = (secondsOfDay: number, meanValue: number, sigma: number) => {
+  const t = secondsOfDay / (24 * 60 * 60);
+  const u = meanValue / (24 * 60 * 60);
+  return (
+    (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+    Math.exp(-0.5 * Math.pow((t - u) / sigma, 2))
+  );
+};
 
-const minAnswerTime = 2000;
-const maxAnswerTime = 8000;
-const minHangupTime = 12000;
-const maxHangupTime = 30000;
+const callProbability = (time: Date) => {
+  if (time.getDay() == Day.Sunday) return 0.05;
+  if (time.getDay() == Day.Saturday) return 0.2;
+
+  if (time.getHours() < 6 || time.getHours() > 21) return 0.1;
+
+  const secondsOfDay =
+    time.getHours() * 60 * 60 + time.getMinutes() * 60 + time.getSeconds();
+  const meanValue = 13 * 60 * 60;
+  return distrib(secondsOfDay, meanValue, 0.3);
+};
+const answerProbability = (time: Date) => {
+  if (time.getDay() == Day.Sunday || time.getDay() == Day.Sunday) return 0;
+  return 0.9;
+};
+const directionInProbability = (time: Date) => {
+  if (time.getDay() == Day.Sunday || time.getDay() == Day.Sunday) return 1;
+  return 0.9;
+};
+const groupProbability = (time: Date) => {
+  return 0.3;
+};
+const activeCallProbability = (time: Date) => {
+  return 0.05;
+};
+const voicemailProbability = (time: Date) => {
+  if (time.getDay() == Day.Sunday || time.getDay() == Day.Sunday) return 1;
+  return 0.1;
+};
+
+const minAnswerTime = (time: Date) => {
+  if (time.getDay() == Day.Sunday || time.getDay() == Day.Saturday) return 0;
+
+  return 2000;
+};
+const maxAnswerTime = (time: Date) => {
+  if (time.getDay() == Day.Sunday || time.getDay() == Day.Saturday) return 0;
+
+  const secondsOfDay =
+    time.getHours() * 60 * 60 + time.getMinutes() * 60 + time.getSeconds();
+  const meanValue = 13 * 60 * 60;
+  return distrib(secondsOfDay, meanValue, 0.3) * 20000;
+};
+const minHangupTime = (time: Date) => {
+  return 12000;
+};
+const maxHangupTime = (time: Date) => {
+  return 100000;
+};
 
 async function generateFakeData(
   db: Database,
@@ -57,7 +114,7 @@ async function generateFakeData(
     d <= to.getTime();
     d += stepMinutes * 1000 * 60
   ) {
-    if (Math.random() < callProbability) {
+    if (Math.random() < callProbability(new Date(d))) {
       await insertFakeData(db, new Date(d));
     }
   }
@@ -76,8 +133,9 @@ async function insertFakeGroups(db: any) {
 async function insertFakeData(db: any, time: Date) {
   const callId = Math.floor(Math.random() * 1000000000000).toString();
   const start = time;
-  const voicemail = Math.random() < voicemailProbability;
-  let direction = (voicemail || Math.random() > directionInProbability) ? "in" : "out";
+  const voicemail = Math.random() < voicemailProbability(time);
+  let direction =
+    voicemail || Math.random() > directionInProbability(time) ? "in" : "out";
   const masterSipId = [Math.floor(Math.random() * 100000).toString()];
   const userExtension = "w" + Math.floor(Math.random() * 10);
   const from = "+49" + Math.floor(Math.random() * 10000000000).toString();
@@ -86,7 +144,7 @@ async function insertFakeData(db: any, time: Date) {
     "+49" + Math.floor(Math.random() * 10000000000).toString();
   let hangupCause = hangupCausesWithoutAnswer[Math.floor(Math.random() * 6)];
   let groupExtension = null;
-  if (Math.random() < groupProbability) {
+  if (Math.random() < groupProbability(time)) {
     const groupCount = Object.keys(groups).length;
     const randGroupId = Math.floor(Math.random() * groupCount);
     groupExtension = Object.keys(groups)[randGroupId];
@@ -128,11 +186,12 @@ async function insertFakeData(db: any, time: Date) {
 
   // TODO: enter Group in some cases
 
-  const callAnswered = Math.random() < answerProbability;
+  const callAnswered = Math.random() < answerProbability(time);
 
   if (callAnswered) {
     const answerTime = new Date(
-      time.getTime() + minAnswerTime + Math.random() * maxAnswerTime
+      time.getTime() +
+        Math.abs(minAnswerTime(time) + Math.random() * maxAnswerTime(time))
     );
 
     (async () => {
@@ -153,10 +212,11 @@ async function insertFakeData(db: any, time: Date) {
   }
 
   let endTime = new Date(
-    time.getTime() + minHangupTime + Math.random() * maxHangupTime
+    time.getTime() +
+      Math.abs(minHangupTime(time) + Math.random() * maxHangupTime(time))
   );
 
-  if (Math.random() < activeCallProbability && !voicemail) {
+  if (Math.random() < activeCallProbability(time) && !voicemail) {
     endTime = null;
     hangupCause = null;
   }
