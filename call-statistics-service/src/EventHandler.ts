@@ -72,28 +72,26 @@ export default class EventHandler {
   ): Promise<void> => {
     console.log(`newCall from ${newCallEvent.from} to ${newCallEvent.to}`);
 
-    if (newCallEvent.users?.length == 1 && newCallEvent.users[0] == "voicemail") {
+    if (this.isVoicemailCall(newCallEvent)) {
       await this.handleVoicemail(newCallEvent, new Date());
       return;
     }
 
     await this.handleRegularNewCall(newCallEvent, new Date());
 
-    const queryNumber = newCallEvent.direction == "in" ? newCallEvent.to : newCallEvent.from;
-    await this.insertCallIntoGroups(newCallEvent.callId, queryNumber);
+    await this.insertCallIntoGroups(newCallEvent);
   };
+
 
   public async handleOnAnswer(answerEvent: AnswerEvent) {
     console.log(`answer from ${answerEvent.from} to ${answerEvent.to}`);
-    await this.setAnswerDateAndNumber(answerEvent.callId, answerEvent.answeringNumber, answerEvent.fullUserId, new Date());
+    await this.setAnswerDateAndNumber(answerEvent, new Date());
   }
 
   public async handleOnHangUp(hangUpEvent: HangUpEvent) {
     console.log(`hangup from ${hangUpEvent.from} to ${hangUpEvent.to}`);
-    await this.setEndDateOnCall(hangUpEvent.callId, new Date(), hangUpEvent.cause)
+    await this.setEndDateOnCall(hangUpEvent, new Date())
   }
-
-
 
   private async handleRegularNewCall(newCallEvent: NewCallEvent, date: Date) {
     const fullUserId =
@@ -110,6 +108,10 @@ export default class EventHandler {
       calleeMasterSipId: webUserInformation?.masterSipId || null,
       calleeExtension: webUserInformation?.userExtension || null,
     });
+  }
+
+  private isVoicemailCall(newCallEvent: NewCallEvent) {
+    return newCallEvent.users?.length == 1 && newCallEvent.users[0] == "voicemail";
   }
 
   private async handleVoicemail(newCallEvent: NewCallEvent, date: Date) {
@@ -132,7 +134,8 @@ export default class EventHandler {
     }
   }
 
-  private async insertCallIntoGroups(callId: string, queryNumber: string) {
+  private async insertCallIntoGroups(newCallEvent: NewCallEvent) {
+    const queryNumber = newCallEvent.direction == "in" ? newCallEvent.to : newCallEvent.from;
     const groupEndpoint = await this.getGroupInformation(queryNumber);
     if (groupEndpoint) {
       await this.database.insertGroup(
@@ -140,32 +143,32 @@ export default class EventHandler {
         groupEndpoint.endpointAlias
       );
 
-      await this.database.updateCall(callId, {
+      await this.database.updateCall(newCallEvent.callId, {
         groupExtension: groupEndpoint.endpointId,
       });
     }
   }
 
-  private async setAnswerDateAndNumber(callId: string, answeringNumber: string, fullUserId: string, date: Date) {
+  private async setAnswerDateAndNumber(answerEvent: AnswerEvent,  date: Date) {
     let callData = {
       answeredAt: date,
-      answeringNumber,
+      answeringNumber: answerEvent.answeringNumber,
       crashed: false,
     };
 
-    if (fullUserId) {
-      const splitUserIdResult = splitFullUserId(fullUserId);
+    if (answerEvent.fullUserId) {
+      const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
       callData["calleeMasterSipId"] = splitUserIdResult.masterSipId;
       callData["calleeExtension"] = splitUserIdResult.userExtension;
     }
 
-    await this.database.updateCall(callId, callData);
+    await this.database.updateCall(answerEvent.callId, callData);
   }
 
-  private async setEndDateOnCall(callId: string, date: Date, hangupCause: string) {
-    await this.database.updateCall(callId, {
+  private async setEndDateOnCall(hangupEvent: HangUpEvent, date: Date) {
+    await this.database.updateCall(hangupEvent.callId, {
       end: date,
-      hangupCause,
+      hangupCause: hangupEvent.cause,
       crashed: false,
     });
   }
