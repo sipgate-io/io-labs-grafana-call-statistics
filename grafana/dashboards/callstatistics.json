@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606380704391,
+  "iteration": 1606380704409,
   "links": [],
   "panels": [
     {
@@ -1632,7 +1632,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT start AS \"time\", callee_number AS \"number of callee\", caller_number AS \"number of caller\"\nFROM calls\nWHERE crashed=1\nORDER BY start DESC\nLIMIT 10",
+          "rawSql": "SELECT start AS \"time\", callee_number AS \"number of callee\", caller_number AS \"number of caller\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND crashed=1\nORDER BY start DESC\nLIMIT 10",
           "refId": "A",
           "select": [
             [
@@ -1804,5 +1804,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 25
+  "version": 29
 }
