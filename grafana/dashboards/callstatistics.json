@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606320268424,
+  "iteration": 1606379070936,
   "links": [],
   "panels": [
     {
@@ -149,7 +149,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n   $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE ('${groups:pipe}' REGEXP alias) or ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL)\nAND ('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\")\nGROUP BY 1\nORDER BY 1;",
+          "rawSql": "SELECT\n   $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nGROUP BY 1\nORDER BY 1;",
           "refId": "A",
           "select": [
             [
@@ -1669,7 +1669,8 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
+          "tags": [],
           "text": [
             "Hotline",
             "Marketing",
@@ -1705,7 +1706,8 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
+          "tags": [],
           "text": [
             "Management Example",
             "Marketing Example",
@@ -1802,5 +1804,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 2
+  "version": 4
 }
