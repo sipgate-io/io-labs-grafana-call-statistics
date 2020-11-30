@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606380704409,
+  "iteration": 1606727024285,
   "links": [],
   "panels": [
     {
@@ -43,7 +43,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 6,
         "x": 0,
         "y": 0
       },
@@ -97,124 +97,6 @@
       "type": "stat"
     },
     {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n   $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nGROUP BY 1\nORDER BY 1;",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "fake"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "calls",
-          "timeColumn": "answered_at",
-          "timeColumnType": "datetime",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "mean call answer time",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "s",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "cacheTimeout": null,
       "datasource": null,
       "fieldConfig": {
@@ -242,9 +124,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
+        "w": 6,
+        "x": 6,
+        "y": 0
       },
       "id": 15,
       "interval": null,
@@ -351,7 +233,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 0
       },
       "id": 27,
       "options": {
@@ -414,7 +296,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 16
+        "y": 8
       },
       "id": 12,
       "interval": null,
@@ -491,6 +373,149 @@
     },
     {
       "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "calls"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 18,
+        "x": 6,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out' AND answered_at IS NOT NULL\nGROUP BY 1\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out' AND answered_at IS NULL\nGROUP BY 1\nORDER BY 1",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "outgoing calls",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "calls",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
       "breakPoint": "50%",
       "cacheTimeout": null,
       "combine": {
@@ -509,7 +534,7 @@
       "gridPos": {
         "h": 8,
         "w": 6,
-        "x": 6,
+        "x": 0,
         "y": 16
       },
       "id": 13,
@@ -587,6 +612,574 @@
     },
     {
       "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "calls"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 18,
+        "x": 6,
+        "y": 16
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in' AND answered_at IS NOT NULL\nGROUP BY 1\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in' AND answered_at IS NULL \nGROUP BY 1\nORDER BY 1",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "incoming calls",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "calls",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "decimals": 0,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n   $__timeGroup(start, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(answered_at, start))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nGROUP BY 1\nORDER BY 1;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "fake"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "calls",
+          "timeColumn": "answered_at",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "mean call answer time",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "string"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Number"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 21,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Wartedauer"
+          }
+        ]
+      },
+      "pluginVersion": "7.2.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Longest waiting numbers",
+      "type": "table"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND answered_at IS NOT NULL\nAND not voicemail\nGROUP BY 1\nORDER BY 1;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "average call duration",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Caller"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Callee"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 23,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Wartedauer"
+          }
+        ]
+      },
+      "pluginVersion": "7.2.1",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  caller_number as \"Caller\",\n  callee_number as \"Callee\",\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Longest calls",
+      "type": "table"
+    },
+    {
+      "aliasColors": {},
       "bars": false,
       "cacheTimeout": null,
       "dashLength": 10,
@@ -621,8 +1214,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 16
+        "x": 0,
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 8,
@@ -783,410 +1376,6 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "unit": "calls"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 24
-      },
-      "hiddenSeries": false,
-      "id": 6,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out' AND answered_at IS NOT NULL\nGROUP BY 1\nORDER BY 1",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='out' AND answered_at IS NULL\nGROUP BY 1\nORDER BY 1",
-          "refId": "B",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "outgoing calls",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "calls",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 24
-      },
-      "hiddenSeries": false,
-      "id": 10,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(answered_at, '$time_unit', 0) as time_sec,\n  AVG(TIME_TO_SEC(TIMEDIFF(end, answered_at))) as \"time in seconds\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start) AND answered_at IS NOT NULL\nAND not voicemail\nGROUP BY 1\nORDER BY 1;",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "average call duration",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "unit": "calls"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 32
-      },
-      "hiddenSeries": false,
-      "id": 4,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"answered\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in' AND answered_at IS NOT NULL\nGROUP BY 1\nORDER BY 1",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(start, '$time_unit', 0) as time_sec,\n  count(DISTINCT call_id) as \"declined\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND direction='in' AND answered_at IS NULL \nGROUP BY 1\nORDER BY 1",
-          "refId": "B",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "incoming calls",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": 0,
-          "format": "calls",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "decimals": 0,
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1210,7 +1399,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 19,
@@ -1306,195 +1495,6 @@
         "align": false,
         "alignLevel": null
       }
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center",
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Caller"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Callee"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 40
-      },
-      "id": 23,
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Wartedauer"
-          }
-        ]
-      },
-      "pluginVersion": "7.2.1",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as \"Caller\",\n  callee_number as \"Callee\",\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Longest calls",
-      "type": "table"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center",
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "string"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Number"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 40
-      },
-      "id": 21,
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Wartedauer"
-          }
-        ]
-      },
-      "pluginVersion": "7.2.1",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Longest waiting numbers",
-      "type": "table"
     },
     {
       "datasource": null,
@@ -1672,15 +1672,11 @@
           "selected": true,
           "tags": [],
           "text": [
-            "Hotline",
             "Marketing",
-            "Sales",
             "Other"
           ],
           "value": [
-            "Hotline",
             "Marketing",
-            "Sales",
             "Other"
           ]
         },
@@ -1707,7 +1703,6 @@
         "allValue": "",
         "current": {
           "selected": true,
-          "tags": [],
           "text": [
             "Management Example",
             "Marketing Example",
@@ -1743,9 +1738,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
-          "text": "1d",
-          "value": "1d"
+          "selected": true,
+          "text": "1h",
+          "value": "1h"
         },
         "hide": 0,
         "includeAll": false,
@@ -1759,12 +1754,12 @@
             "value": "1m"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "1h",
             "value": "1h"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "1d",
             "value": "1d"
           },
@@ -1797,12 +1792,12 @@
     ]
   },
   "time": {
-    "from": "2020-11-10T00:00:00.000Z",
-    "to": "2020-11-24T00:00:00.000Z"
+    "from": "now-14d",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 29
+  "version": 2
 }
