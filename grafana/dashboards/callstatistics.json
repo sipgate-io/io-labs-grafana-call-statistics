@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606727024285,
+  "iteration": 1606743493376,
   "links": [],
   "panels": [
     {
@@ -373,7 +373,7 @@
     },
     {
       "aliasColors": {},
-      "bars": true,
+      "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
@@ -404,7 +404,7 @@
         "total": false,
         "values": false
       },
-      "lines": false,
+      "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -612,7 +612,7 @@
     },
     {
       "aliasColors": {},
-      "bars": true,
+      "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
@@ -643,7 +643,7 @@
         "total": false,
         "values": false
       },
-      "lines": false,
+      "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -935,7 +935,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as Number,\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
+          "rawSql": "SELECT\n  start as \"Starting Time\",\n  TIMEDIFF(answered_at, start) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
           "refId": "A",
           "select": [
             [
@@ -959,7 +959,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Longest waiting numbers",
+      "title": "Longest waiting times",
       "type": "table"
     },
     {
@@ -1151,7 +1151,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  caller_number as \"Caller\",\n  callee_number as \"Callee\",\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
+          "rawSql": "SELECT\n  start as \"Starting Time\",\n  TIMEDIFF(end, answered_at) as Duration\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND $__timeFilter(start)\nAND answered_at IS NOT NULL\nAND end IS NOT NULL\nAND direction = \"in\"\nORDER BY Duration DESC\nLIMIT 20",
           "refId": "A",
           "select": [
             [
@@ -1583,81 +1583,6 @@
       "timeShift": null,
       "title": "Most calling numbers ",
       "type": "table"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null,
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 48
-      },
-      "id": 25,
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "crashed"
-          }
-        ]
-      },
-      "pluginVersion": "7.2.1",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT start AS \"time\", callee_number AS \"number of callee\", caller_number AS \"number of caller\"\nFROM calls as c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND crashed=1\nORDER BY start DESC\nLIMIT 10",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "crashed calls",
-      "type": "table"
     }
   ],
   "refresh": false,
@@ -1672,11 +1597,15 @@
           "selected": true,
           "tags": [],
           "text": [
+            "Hotline",
             "Marketing",
+            "Sales",
             "Other"
           ],
           "value": [
+            "Hotline",
             "Marketing",
+            "Sales",
             "Other"
           ]
         },
@@ -1702,7 +1631,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "Management Example",
             "Marketing Example",
@@ -1738,7 +1667,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "1h",
           "value": "1h"
         },
@@ -1792,12 +1721,12 @@
     ]
   },
   "time": {
-    "from": "now-14d",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 2
+  "version": 14
 }
