@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1606743493376,
+  "iteration": 1606906377014,
   "links": [],
   "panels": [
     {
@@ -206,19 +206,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "caller"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "callee"
+              "options": "number"
             },
             "properties": [
               {
@@ -248,7 +236,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT start as \"time\", caller_number as \"caller\", callee_number as \"callee\"\nFROM calls c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND c.crashed=0 AND c.answered_at IS NOT NULL AND c.end IS NULL",
+          "rawSql": "SELECT start AS \"time\", direction , ( CASE WHEN direction = \"in\" THEN callee_number ELSE caller_number END ) AS \"number\"\nFROM calls c\nLEFT JOIN groups on c.group_extension=groups.extension\nLEFT JOIN teams_numbers as tn on c.callee_number=tn.number or c.caller_number=tn.number\nLEFT JOIN teams as t on tn.team_id=t.id\nWHERE (('${groups:pipe}' REGEXP alias) OR ('${groups:pipe}' REGEXP \"Other\" AND c.group_extension IS NULL))\nAND (('${teams:pipe}' REGEXP t.name) OR ('${teams:pipe}' REGEXP \"Other\"))\nAND c.crashed=0 AND c.answered_at IS NOT NULL AND c.end IS NULL",
           "refId": "A",
           "select": [
             [
@@ -272,7 +260,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "active call numbers",
+      "title": "active calls",
       "type": "table"
     },
     {
@@ -895,18 +883,18 @@
               }
             ]
           },
-          "unit": "string"
+          "unit": "none"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "Number"
+              "options": "Starting Time"
             },
             "properties": [
               {
                 "id": "unit",
-                "value": "string"
+                "value": "dateTimeAsIso"
               }
             ]
           }
@@ -1105,24 +1093,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Caller"
+              "options": "Starting Time"
             },
             "properties": [
               {
                 "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Callee"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
+                "value": "dateTimeAsIso"
               }
             ]
           }
@@ -1595,7 +1571,6 @@
         "allValue": "",
         "current": {
           "selected": true,
-          "tags": [],
           "text": [
             "Hotline",
             "Marketing",
@@ -1631,7 +1606,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "Management Example",
             "Marketing Example",
@@ -1728,5 +1703,5 @@
   "timezone": "",
   "title": "Call Statistics",
   "uid": "FIn1mlpGz",
-  "version": 14
+  "version": 22
 }
