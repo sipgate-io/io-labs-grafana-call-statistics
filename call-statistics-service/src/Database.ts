@@ -7,8 +7,8 @@ export interface CallObject {
   direction?: string;
   callerNumber?: string;
   calleeNumber?: string;
-  calleeMasterSipId?: string;
-  calleeExtension?: string;
+  masterSipId?: string;
+  userExtension?: string;
   end?: Date;
   answeredAt?: Date;
   answeringNumber?: string;
@@ -24,8 +24,8 @@ const callObjectDictionary = {
   direction: "direction",
   caller_number: "caller_number",
   callee_number: "callee_number",
-  calleeMasterSipId: "callee_mastersip_id",
-  calleeExtension: "callee_extension",
+  masterSipId: "mastersip_id",
+  userExtension: "user_extension",
   end: "end",
   answeredAt: "answered_at",
   answeringNumber: "answering_number",
@@ -113,8 +113,8 @@ export default class Database {
         callObject.end || null,
         callObject.answeredAt || null,
         callObject.direction || null,
-        callObject.calleeMasterSipId || null,
-        callObject.calleeExtension || null,
+        callObject.masterSipId || null,
+        callObject.userExtension || null,
         callObject.callerNumber || null,
         callObject.calleeNumber || null,
         callObject.answeringNumber || null,

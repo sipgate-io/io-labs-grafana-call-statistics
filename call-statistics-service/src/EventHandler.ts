@@ -104,8 +104,8 @@ export default class EventHandler {
       direction: newCallEvent.direction,
       callerNumber: newCallEvent.from,
       calleeNumber: newCallEvent.to,
-      calleeMasterSipId: webUserInformation?.masterSipId || null,
-      calleeExtension: webUserInformation?.userExtension || null,
+      masterSipId: webUserInformation?.masterSipId || null,
+      userExtension: webUserInformation?.userExtension || null,
     });
   }
 
@@ -163,8 +163,8 @@ export default class EventHandler {
 
     if (answerEvent.fullUserId) {
       const splitUserIdResult = splitFullUserId(answerEvent.fullUserId);
-      callData["calleeMasterSipId"] = splitUserIdResult.masterSipId;
-      callData["calleeExtension"] = splitUserIdResult.userExtension;
+      callData["masterSipId"] = splitUserIdResult.masterSipId;
+      callData["userExtension"] = splitUserIdResult.userExtension;
     }
 
     await this.database.updateCall(answerEvent.callId, callData);
