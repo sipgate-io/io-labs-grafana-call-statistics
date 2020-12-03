@@ -82,15 +82,14 @@ export default class EventHandler {
     await this.insertCallIntoGroups(newCallEvent);
   };
 
-
   public async handleOnAnswer(answerEvent: AnswerEvent) {
     console.log(`answer from ${answerEvent.from} to ${answerEvent.to}`);
-    await this.setAnswerDateAndNumber(answerEvent, new Date());
+    await this.updateAnswerDateAndNumber(answerEvent, new Date());
   }
 
   public async handleOnHangUp(hangUpEvent: HangUpEvent) {
     console.log(`hangup from ${hangUpEvent.from} to ${hangUpEvent.to}`);
-    await this.setEndDateOnCall(hangUpEvent, new Date())
+    await this.updateEndDateOnCall(hangUpEvent, new Date());
   }
 
   private async handleRegularNewCall(newCallEvent: NewCallEvent, date: Date) {
@@ -111,7 +110,9 @@ export default class EventHandler {
   }
 
   private isVoicemailCall(newCallEvent: NewCallEvent) {
-    return newCallEvent.users?.length == 1 && newCallEvent.users[0] == "voicemail";
+    return (
+      newCallEvent.users?.length == 1 && newCallEvent.users[0] == "voicemail"
+    );
   }
 
   private async handleVoicemail(newCallEvent: NewCallEvent, date: Date) {
@@ -135,7 +136,8 @@ export default class EventHandler {
   }
 
   private async insertCallIntoGroups(newCallEvent: NewCallEvent) {
-    const queryNumber = newCallEvent.direction == "in" ? newCallEvent.to : newCallEvent.from;
+    const queryNumber =
+      newCallEvent.direction == "in" ? newCallEvent.to : newCallEvent.from;
     const groupEndpoint = await this.getGroupInformation(queryNumber);
     if (groupEndpoint) {
       await this.database.insertGroup(
@@ -149,7 +151,10 @@ export default class EventHandler {
     }
   }
 
-  private async setAnswerDateAndNumber(answerEvent: AnswerEvent,  date: Date) {
+  private async updateAnswerDateAndNumber(
+    answerEvent: AnswerEvent,
+    date: Date
+  ) {
     let callData = {
       answeredAt: date,
       answeringNumber: answerEvent.answeringNumber,
@@ -165,7 +170,7 @@ export default class EventHandler {
     await this.database.updateCall(answerEvent.callId, callData);
   }
 
-  private async setEndDateOnCall(hangupEvent: HangUpEvent, date: Date) {
+  private async updateEndDateOnCall(hangupEvent: HangUpEvent, date: Date) {
     await this.database.updateCall(hangupEvent.callId, {
       end: date,
       hangupCause: hangupEvent.cause,
