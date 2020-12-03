@@ -197,7 +197,7 @@ async function insertFakeData(db: any, time: Date) {
     (async () => {
       if (masterSipId) {
         await db.query(
-          "UPDATE calls SET answered_at=?, callee_mastersip_id=?, callee_extension=?, answering_number=? WHERE call_id=?",
+          "UPDATE calls SET answered_at=?, mastersip_id=?, user_extension=?, answering_number=? WHERE call_id=?",
           [answerTime, masterSipId, userExtension, answeringNumber, callId]
         );
       } else {
