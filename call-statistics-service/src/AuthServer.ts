@@ -82,7 +82,8 @@ export default class AuthServer {
 
     this.setAuthCredentials(tokenResponse);
 
-    response.writeHead(301, { Location: "http://localhost:3009" });
+    const projectUid = "FIn1mlpGz"; // as specified in grafana/dashboards/callstatistics.json
+    response.writeHead(301, { Location: `http://localhost:3009/d/${projectUid}/` });
     response.end();
   }
 
