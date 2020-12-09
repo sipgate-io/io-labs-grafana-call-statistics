@@ -93,7 +93,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "waiting in queue",
+      "title": "Waiting in queue",
       "type": "stat"
     },
     {
@@ -176,7 +176,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "active calls",
+      "title": "Active calls",
       "type": "stat"
     },
     {
@@ -260,7 +260,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "active calls",
+      "title": "Active calls",
       "type": "table"
     },
     {
@@ -355,7 +355,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "outgoing pie",
+      "title": "Outgoing answer ratio",
       "type": "grafana-piechart-panel",
       "valueName": "current"
     },
@@ -465,7 +465,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "outgoing calls",
+      "title": "Outgoing calls",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -594,7 +594,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "incoming pie",
+      "title": "Incoming answer ratio",
       "type": "grafana-piechart-panel",
       "valueName": "current"
     },
@@ -704,7 +704,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "incoming calls",
+      "title": "Incoming calls",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -824,7 +824,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "mean call answer time",
+      "title": "Mean call answer time",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1029,7 +1029,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "average call duration",
+      "title": "Average call duration",
       "tooltip": {
         "shared": true,
         "sort": 0,
