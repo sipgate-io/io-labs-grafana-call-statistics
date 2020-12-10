@@ -25,7 +25,9 @@ Start the docker containers with `make up` and authenticate on `$SEVICE_BASE_URL
 After successfully authenticating via OAuth you will be redirected to the Grafana dashboard.
 There you can login with the Grafana standard credentials (user: admin, password: admin) and are prompted to change them.
 
-Everything is now set up and new calls will be processed and visible in Grafana. 
+Everything is now set up and new calls will be processed and visible in Grafana.
+
+The Grafana dashboard is accessible at `$SERVICE_BASE_URL:3009/`
 
 ## Developing
 
