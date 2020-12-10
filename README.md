@@ -15,6 +15,18 @@ If you are a **sipgate team** user logged in with an admin account you can find 
 
 The project relies on Docker Compose. Thatfore a Docker installation is required. Please follow the instructions on the [Get Docker](https://docs.docker.com/get-docker/) instructions for your dedicated system and the [Install Docker Compose](https://docs.docker.com/compose/install/) respectively. After that your system is ready tohost multiple virtual containers as multi-container application.
 
+## Quickstart
+
+Book sipgate.io and configure the incoming-/outgoing-url at [console.sipgate.com](console.sipgate.com) to your local environment. To make your local environment accessible, use a service like [localhost.run](https://localhost.run/) or [ngrok](https://ngrok.com/).
+
+To setup the environment run `setup.sh` and follow the instructions.
+
+Start the docker containers with `make up` and authenticate on `$SEVICE_BASE_URL/auth`.
+After successfully authenticating via OAuth you will be redirected to the Grafana dashboard.
+There you can login with the Grafana standard credentials (user: admin, password: admin) and are prompted to change them.
+
+Everything is now set up and new calls will be processed and visible in Grafana. 
+
 ## Developing
 
 For easy developing there is a Makefile with short commands to start/end the containers and populate them with fake data:
