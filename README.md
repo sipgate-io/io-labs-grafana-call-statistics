@@ -21,7 +21,7 @@ Book sipgate.io and configure the incoming-/outgoing-url at [console.sipgate.com
 
 To setup the environment run `setup.sh` and follow the instructions.
 
-Start the docker containers with `make up` and authenticate on `$SEVICE_BASE_URL/auth`.
+Start the docker containers with `make up` and authenticate on `$SERVICE_BASE_URL/auth`.
 After successfully authenticating via OAuth you will be redirected to the Grafana dashboard.
 There you can login with the Grafana standard credentials (user: admin, password: admin) and are prompted to change them.
 
