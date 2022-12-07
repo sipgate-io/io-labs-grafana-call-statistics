@@ -61,8 +61,8 @@ if [ -f "$env_path" ]; then
   fi
 fi
 
-read -p "Please enter your sipgate email address: " sipgate_email
-read -s -p "Please enter your password: " sipgate_password
+read -p "Please enter your sipgate.io Personal Access Token-ID (Required Scopes: authorization:*): " sipgate_email
+read -s -p "Please enter your Personal Access Token: " sipgate_password
 printf "\n"
 read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
 read -p "Base URL for the authentication service [http://localhost:8080]: " service_base_url
@@ -98,8 +98,8 @@ read -d '' oauth_client_request << EOF || true
 EOF
 
 oauth_body=$(make_api_request "POST" "/authorization/oauth2/clients" "$token" "$oauth_client_request")
-
 client_id=$(extract_json_value "$oauth_body" "clientId")
+oauth_body=$(make_api_request "GET" "/authorization/oauth2/clients/$client_id" "$token")
 client_secret=$(extract_json_value "$oauth_body" "clientSecret")
 
 read -p "mySQL host [db]: " mysql_host
