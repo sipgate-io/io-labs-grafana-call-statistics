@@ -14,9 +14,9 @@ const AUTHENTICATION_ENDPOINT = "/auth";
 export const AUTHENTICATION_CODE_ENDPOINT = "/auth-code";
 const AUTH_HTML_FILE = "./web/index.html";
 const SIPGATE_AUTH_URL =
-  "https://login.sipgate.com/auth/realms/sipgate-apps/protocol/openid-connect/auth";
+  "https://login.sipgate.com/auth/realms/third-party/protocol/openid-connect/auth";
 const SIPGATE_TOKEN_URL =
-  "https://login.sipgate.com/auth/realms/sipgate-apps/protocol/openid-connect/token";
+  "https://login.sipgate.com/auth/realms/third-party/protocol/openid-connect/token";
 
 type Config = {
   clientId: string;
