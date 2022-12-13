@@ -65,6 +65,7 @@ export default class AuthServer {
     database
       .readTokensFromDatabase()
       .then((authCredentials) => {
+        if (authCredentials === undefined) throw new Error("Undefined Auth Credentials");
         this.authCredentials = authCredentials;
         schedule("0 3 * * *", () => {
           this.refreshTokens();
@@ -90,7 +91,7 @@ export default class AuthServer {
   }
 
   public async refreshTokens(): Promise<string> {
-    if (!this.authCredentials || !this.authCredentials.accessToken) return;
+    if (!this.authCredentials || !this.authCredentials.accessToken) return "";
 
     const tokenResponse = await this.sendTokenRequest({
       grant_type: "refresh_token",
@@ -150,6 +151,7 @@ export default class AuthServer {
     request: IncomingMessage,
     response: ServerResponse
   ) => {
+    if (request.url === undefined) throw new Error("Undefined Request Url");
     const { slug, queryParams } = this.parseUrl(request.url);
     const method = request.method;
 
@@ -158,14 +160,15 @@ export default class AuthServer {
     }
 
     if (method === "GET" && slug === AUTHENTICATION_CODE_ENDPOINT) {
-      if (!queryParams.has("code")) {
+      const code: string | undefined = queryParams.get("code")
+      if (!queryParams.has("code") || code === undefined) {
         return this.sendBadRequestResponse(
           response,
           "Missing 'code' query param"
         );
       }
 
-      return this.handleAuthCodeRequest(response, queryParams.get("code"));
+      return this.handleAuthCodeRequest(response, code);
     }
 
     // invoke original (stored) handlers

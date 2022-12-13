@@ -54,7 +54,7 @@ export default class EventHandler {
     await this.createAuthenticatedSipgateioClient();
 
     if (!this.sipgateIoClient) {
-      return null;
+      return undefined;
     }
 
     const numberModule = createNumbersModule(this.sipgateIoClient);
@@ -96,16 +96,16 @@ export default class EventHandler {
     const fullUserId =
       newCallEvent.fullUserIds?.length == 1
         ? newCallEvent.fullUserIds[0]
-        : null;
-    const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : null;
+        : undefined;
+    const webUserInformation = fullUserId ? splitFullUserId(fullUserId) : undefined;
 
     await this.database.addCall(newCallEvent.callId, {
       start: date,
       direction: newCallEvent.direction,
       callerNumber: newCallEvent.from,
       calleeNumber: newCallEvent.to,
-      masterSipId: webUserInformation?.masterSipId || null,
-      userExtension: webUserInformation?.userExtension || null,
+      masterSipId: webUserInformation?.masterSipId || undefined,
+      userExtension: webUserInformation?.userExtension || undefined,
     });
   }
 

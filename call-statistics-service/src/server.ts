@@ -5,10 +5,10 @@ import Database, { TeamObject } from "./Database";
 import { readFile } from "./utils";
 
 // as specified in the docker-compose.yml
-const db_host = process.env.MYSQL_HOST;
-const db_user = process.env.MYSQL_USER;
-const db_password = process.env.MYSQL_PASSWORD;
-const db_database = process.env.MYSQL_DATABASE;
+const db_host = process.env.MYSQL_HOST || "db";
+const db_user = process.env.MYSQL_USER || "user";
+const db_password = process.env.MYSQL_PASSWORD || "supersecret";
+const db_database = process.env.MYSQL_DATABASE || "call_statistics";
 
 const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
 const webhookServerAddress =

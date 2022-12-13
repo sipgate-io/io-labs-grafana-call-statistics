@@ -71,23 +71,30 @@ export default class Database {
     });
   }
 
-  public async readTokensFromDatabase(): Promise<AuthCredentials | null> {
+  public async readTokensFromDatabase(): Promise<AuthCredentials | undefined> {
     const authenticationParams: [] = await this.query(
       "SELECT token_type, token_value FROM authentication_params",
       []
     );
 
     if (authenticationParams.length == 0) {
-      return null;
+      return undefined;
+    }
+
+    const accessToken : Object | undefined = authenticationParams.find(
+      (row) => row["token_type"] == "access"
+    );
+    const refreshToken: Object | undefined = authenticationParams.find(
+      (row) => row["token_type"] == "refresh"
+    );
+
+    if (accessToken === undefined || refreshToken === undefined) {
+      return undefined;
     }
 
     const tokens: AuthCredentials = {
-      accessToken: authenticationParams.find(
-        (row) => row["token_type"] == "access"
-      )["token_value"],
-      refreshToken: authenticationParams.find(
-        (row) => row["token_type"] == "refresh"
-      )["token_value"],
+      accessToken: accessToken["token_value"],
+      refreshToken: refreshToken["token_value"],
     };
 
     return tokens;
@@ -139,7 +146,7 @@ export default class Database {
     callObject: CallObject
   ): Promise<void> {
     let queryString: string = "UPDATE calls SET ";
-    let params = [];
+    let params: string[] = [];
     for (const attribute in callObject) {
       queryString += `${callObjectDictionary[attribute]}=?, `;
       params.push(callObject[attribute]);
