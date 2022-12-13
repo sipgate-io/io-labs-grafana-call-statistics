@@ -65,8 +65,10 @@ read -p "Please enter your sipgate.io Personal Access Token-ID (Required Scopes:
 read -s -p "Please enter your Personal Access Token: " sipgate_password
 printf "\n"
 read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
-read -p "Base URL for the authentication service [http://localhost:8080]: " service_base_url
-service_base_url=${service_base_url:-http://localhost:8080}
+read -p "Please enter your webhook port [8080]: " webhook_port
+webhook_port=${webhook_port:-8080}
+read -p "Please enter the containers internal port [8080]: " internal_port
+internal_port=${internal_port:-8080}
 
 printf "\n\n"
 
@@ -87,10 +89,10 @@ read -d '' oauth_client_request << EOF || true
   "name": "Call statistics service",
   "description": "Generated client for call statistics service ($(date))",
   "redirectUris": [
-    "$service_base_url/auth-code"
+    "http://localhost:$webhook_port/auth-code"
   ],
   "webOrigins": [
-    "$service_base_url/auth-code"
+    "http://localhost:$webhook_port/auth-code"
   ],
   "privacyUrl": "",
   "termsUrl": ""
@@ -115,8 +117,8 @@ touch .env
 printf "SIPGATE_CLIENT_ID=$client_id\n" >> .env
 printf "SIPGATE_CLIENT_SECRET=$client_secret\n" >> .env
 printf "SIPGATE_WEBHOOK_URL=$webhook_url\n" >> .env
-printf "\n" >> .env
-printf "SERVICE_BASE_URL=$service_base_url\n" >> .env
+printf "SIPGATE_WEBHOOK_PORT=$webhook_port\n" >> .env
+printf "INTERNAL_PORT=$internal_port\n" >> .env
 printf "\n" >> .env
 
 printf "MYSQL_HOST=$mysql_host\n" >> .env

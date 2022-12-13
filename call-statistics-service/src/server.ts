@@ -10,21 +10,16 @@ const db_user = process.env.MYSQL_USER || "user";
 const db_password = process.env.MYSQL_PASSWORD || "supersecret";
 const db_database = process.env.MYSQL_DATABASE || "call_statistics";
 
-const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
+export const webhookServerPort = process.env.SIPGATE_WEBHOOK_PORT || 8080;
 const webhookServerAddress =
   process.env.SIPGATE_WEBHOOK_URL || "http://localhost";
+const internalPort = process.env.INTERNAL_PORT || 8080;
 
 const clientId = process.env.SIPGATE_CLIENT_ID;
 const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
-export const baseUrl = process.env.SERVICE_BASE_URL;
 
 if (!clientId || !clientSecret) {
   console.error("Please provide a client ID and client secret");
-  process.exit(1);
-}
-
-if (!baseUrl) {
-  console.error("Please provide a SERVICE_BASE_URL");
   process.exit(1);
 }
 
@@ -45,8 +40,8 @@ if (!baseUrl) {
 
   if (!tokens) {
     console.error(
-      "Service not authenticated yet. Please visit " +
-        baseUrl +
+      "Service not authenticated yet. Please visit http://localhost:" +
+        webhookServerPort +
         "/auth and follow the link."
     );
   }
@@ -55,7 +50,7 @@ if (!baseUrl) {
 
   webhookModule
     .createServer({
-      port: webhookServerPort,
+      port: internalPort,
       serverAddress: webhookServerAddress,
     })
     .then((webhookServer) => {
@@ -65,7 +60,7 @@ if (!baseUrl) {
         {
           clientId,
           clientSecret,
-          redirectUri: `${baseUrl}${AUTHENTICATION_CODE_ENDPOINT}`,
+          redirectUri: `http://localhost:${webhookServerPort}${AUTHENTICATION_CODE_ENDPOINT}`,
         }
       );
 

@@ -10,7 +10,7 @@ import Database from "./Database";
 import { isTokenExpired, splitFullUserId } from "./utils";
 import { NumberResponseItem } from "sipgateio/dist/numbers";
 import AuthServer from "./AuthServer";
-import { baseUrl } from "./server";
+import { webhookServerPort } from "./server";
 
 export default class EventHandler {
   private database: Database;
@@ -29,8 +29,8 @@ export default class EventHandler {
 
     if (!authCredentials || !authCredentials.accessToken) {
       console.error(
-        "Service not authenticated yet. Please visit " +
-          baseUrl +
+        "Service not authenticated yet. Please visit http://localhost:" +
+          webhookServerPort +
           "/auth and follow the link."
       );
       return;
