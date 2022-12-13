@@ -12,7 +12,7 @@ const db_database = process.env.MYSQL_DATABASE || "call_statistics";
 
 const webhookServerPort = process.env.SIPGATE_WEBHOOK_SERVER_PORT || 8080;
 const webhookServerAddress =
-  process.env.SIPGATE_WEBHOOK_URL || "https://localhost";
+  process.env.SIPGATE_WEBHOOK_URL || "http://localhost";
 
 const clientId = process.env.SIPGATE_CLIENT_ID;
 const clientSecret = process.env.SIPGATE_CLIENT_SECRET;
