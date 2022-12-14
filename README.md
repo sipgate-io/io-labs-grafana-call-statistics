@@ -8,26 +8,22 @@ This docker compose environment demonstrates how you can use our [official Node.
 
 In order to use sipgate.io, you need to book the corresponding package in your sipgate account. The most basic package is the free **sipgate.io S** package.
 
-If you use [sipgate basic](https://app.sipgatebasic.de/feature-store) or [simquadrat](https://app.simquadrat.de/feature-store) you can book packages in your product's feature store.
-If you are a **sipgate team** user logged in with an admin account you can find the option under **Account Administration**&nbsp;>&nbsp;**Plans & Packages**.
-
 ## Install required tools
 
-The project relies on Docker Compose. Thatfore a Docker installation is required. Please follow the instructions on the [Get Docker](https://docs.docker.com/get-docker/) instructions for your dedicated system and the [Install Docker Compose](https://docs.docker.com/compose/install/) respectively. After that your system is ready tohost multiple virtual containers as multi-container application.
+The project relies on Docker Compose. Therefore, a Docker installation is required. Please follow the instructions on the [Get Docker](https://docs.docker.com/get-docker/) instructions for your dedicated system and the [Install Docker Compose](https://docs.docker.com/compose/install/) respectively. After that your system is ready to host multiple virtual containers as multi-container application.
 
 ## Quickstart
 
-Book sipgate.io and configure the incoming-/outgoing-url at [console.sipgate.com](console.sipgate.com) to your local environment. To make your local environment accessible, use a service like [localhost.run](https://localhost.run/) or [ngrok](https://ngrok.com/).
-
-To setup the environment run `setup.sh` and follow the instructions.
-
-Start the docker containers with `make up` and authenticate on `$SERVICE_BASE_URL/auth`.
+1. Book sipgate.io 
+2. To make your local environment accessible, use a service like [localhost.run](https://localhost.run/) or [ngrok](https://ngrok.com/).
+3. To setup the environment run `setup.sh` and follow the instructions.
+4. Start the docker containers with `make up` and authenticate on `http://localhost:$WEBHOOK_PORT/auth`.
 After successfully authenticating via OAuth you will be redirected to the Grafana dashboard.
 There you can login with the Grafana standard credentials (user: admin, password: admin) and are prompted to change them.
 
 Everything is now set up and new calls will be processed and visible in Grafana.
 
-The Grafana dashboard is accessible at `$SERVICE_BASE_URL:3009/`
+The Grafana dashboard is accessible at `http://localhost:3009/`
 
 ## Developing
 
