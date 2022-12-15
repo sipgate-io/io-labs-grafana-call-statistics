@@ -61,10 +61,14 @@ if [ -f "$env_path" ]; then
   fi
 fi
 
-read -p "Please enter your sipgate.io Personal Access Token-ID (Required Scopes: authorization:*): " sipgate_email
-read -s -p "Please enter your Personal Access Token: " sipgate_password
+read -p "Please enter your sipgate.io Personal-Access-Token-ID with the following scopes:
+authorization:oauth2:clients:read
+authorization:oauth2:clients:write
+settings:sipgateio:write
+: " sipgate_email
+read -s -p "Please enter your Personal-Access-Token: " sipgate_password
 printf "\n"
-read -p "Please enter your webhook URL (e.g.: https://your.domain:3000): " webhook_url
+read -p "Please enter your webhook URL (e.g.: https://b99b-99-999-999-99.eu.ngrok.io): " webhook_url
 read -p "Please enter your webhook port [8080]: " webhook_port
 webhook_port=${webhook_port:-8080}
 read -p "Please enter the containers internal port [8080]: " internal_port
