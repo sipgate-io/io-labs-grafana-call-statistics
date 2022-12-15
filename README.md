@@ -15,11 +15,28 @@ The project relies on Docker Compose. Therefore, a Docker installation is requir
 ## Quickstart
 
 1. To make your local environment accessible, use a service like [localhost.run](https://localhost.run/) or [ngrok](https://ngrok.com/).
-2. To setup the environment run `setup.sh` and follow the instructions.
-    - If you are working with MacOs or the `setup.sh` fails, you can skip that step and setup the project manually:
-    - Create a `.env` file by copying `.env.example` and follow the instructions above each variable.
+
+2. If you are working with Linux, follow the instructions at 2.a.<br>
+If you are using another operating system, follow the manual setup at 2.b instead.
+
+    a. &nbsp; Create a Personal Access Token at [app.sipgate.com](https://app.sipgate.com/w0/personal-access-token) with the following scopes.
+    This token will only be used by the `setup.sh` script and can be deleted afterwards.
+
+    ```
+    authorization:oauth2:clients:read
+    authorization:oauth2:clients:write
+    settings:sipgateio:write
+    ```
+    
+    &nbsp; &nbsp; &nbsp;&nbsp; Then run `./setup.sh` in the project's directory.<br>
+    &nbsp; &nbsp; &nbsp;&nbsp; If you run into any problems, follow the manual setup at 2.b.
+
+    b. &nbsp; To manually set up the project, create a `.env` file by copying [`.env.example`](.env.example) and follow the instructions above each variable.
+
 3. Start the docker containers with `make up`.
+
 4. Authenticate on `http://localhost:{WEBHOOK_PORT}/auth` (replace `{WEBHOOK_PORT}` with your port).
+
 5. After successfully authenticating via OAuth you will be redirected to the Grafana dashboard.
 There you can login with the Grafana standard credentials (`user: admin`, `password: admin`) and are prompted to change them.
 
