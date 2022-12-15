@@ -29,7 +29,7 @@ function make_api_request {
   -d "$body" \
   --write-out '\n%{http_code}'
   )
-  response_body="$(echo "$response" | head -n -1)"
+  response_body="$(echo "$response" | tac | tail -n +2 | tac)" # remove last line, compatiple with Mac and Linux
   status="$(echo "$response" | tail -n 1)"
 
   if [[ "$status" == "400" ]]; then
