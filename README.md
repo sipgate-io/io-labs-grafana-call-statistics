@@ -16,8 +16,8 @@ The project relies on Docker Compose. Therefore, a Docker installation is requir
 
 1. To make your local environment accessible, use a service like [localhost.run](https://localhost.run/) or [ngrok](https://ngrok.com/).
 
-2. If you are working with Linux, follow the instructions at 2.a.<br>
-If you are using another operating system, follow the manual setup at 2.b instead.
+2. To set up the project follow the instructions at 2.a.<br>
+If you prefer a manual setup process, please follow the instructions at 2.b.
 
     a. &nbsp; Create a Personal Access Token at [app.sipgate.com](https://app.sipgate.com/w0/personal-access-token) with the following scopes.
     This token will only be used by the `setup.sh` script and can be deleted afterwards.
