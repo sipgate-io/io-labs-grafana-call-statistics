@@ -11,8 +11,7 @@ function to_lower_case {
 }
 
 function extract_json_value {
-  local value=$(echo "$1" | grep -o "\"$2\":\"[^\"]*" | grep -o '[^"]*$')
-
+  local value=$(echo "$1" | grep -o "\"${2}\"\s*:\s*\"[^\"]*" | grep -o '[^"]*$')
   echo "$value"
 }
 
@@ -29,9 +28,8 @@ function make_api_request {
   -d "$body" \
   --write-out '\n%{http_code}'
   )
-  response_body="$(echo "$response" | tac | tail -n +2 | tac)" # remove last line, compatiple with Mac and Linux
+  response_body="$(echo "$response" | tac | tail -n +2 | tac)" # remove last line, compatible with Mac and Linux
   status="$(echo "$response" | tail -n 1)"
-
   if [[ "$status" == "400" ]]; then
     echo "Please provide a valid webhook URL."
     exit 1
@@ -61,22 +59,25 @@ if [ -f "$env_path" ]; then
   fi
 fi
 
-read -p "Please enter your sipgate.io Personal-Access-Token-ID with the following scopes:
+read -p "Your sipgate.io Personal-Access-Token needs the following scopes:
 authorization:oauth2:clients:read
 authorization:oauth2:clients:write
 settings:sipgateio:write
-: " sipgate_email
-read -s -p "Please enter your Personal-Access-Token: " sipgate_password
+Please enter your Personal-Access-Token-ID: " sipgate_token_id
+
+read -p "Please enter your Personal-Access-Token: " sipgate_token
 printf "\n"
-read -p "Please enter your webhook URL (e.g.: https://b99b-99-999-999-99.eu.ngrok.io): " webhook_url
+read -p "Please enter your webhook URL without port (e.g.: https://b99b-99-999-999-99.eu.ngrok.io): " webhook_url
 read -p "Please enter your webhook port [8080]: " webhook_port
 webhook_port=${webhook_port:-8080}
-read -p "Please enter the containers internal port [8080]: " internal_port
+read -p "Please enter the containers internal port
+(This value does not have to be changed in most cases)
+internal port [8080]: " internal_port
 internal_port=${internal_port:-8080}
 
 printf "\n\n"
 
-token=$(echo -n "$sipgate_email:$sipgate_password" | base64)
+token=$(echo -n "$sipgate_token_id:$sipgate_token" | base64)
 
 
 read -d '' webhook_settings_request << EOF || true
