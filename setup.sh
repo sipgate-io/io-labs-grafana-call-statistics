@@ -74,6 +74,8 @@ read -p "Please enter the containers internal port
 (This value does not have to be changed in most cases)
 internal port [8080]: " internal_port
 internal_port=${internal_port:-8080}
+read -p "Authenticate on an external system instead of this one? [y/N]: " external_base_url
+external_base_url=${external_base_url:=n}
 
 printf "\n\n"
 
@@ -89,15 +91,21 @@ EOF
 
 make_api_request "PUT" "/settings/sipgateio" "$token" "$webhook_settings_request"
 
+if ! [ 'n' = "$(to_lower_case "$external_base_url")" ]; then
+  base_url="$webhook_url"
+  else
+  base_url="http://localhost:$webhook_port"
+fi
+
 read -d '' oauth_client_request << EOF || true
 {
   "name": "Call statistics service",
   "description": "Generated client for call statistics service ($(date))",
   "redirectUris": [
-    "http://localhost:$webhook_port/auth-code"
+    "$base_url/auth-code"
   ],
   "webOrigins": [
-    "http://localhost:$webhook_port/auth-code"
+    "$base_url/auth-code"
   ],
   "privacyUrl": "",
   "termsUrl": ""

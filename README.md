@@ -35,7 +35,7 @@ If you prefer a manual setup process, please follow the instructions at 2.b.
 
 3. Start the docker containers with `make up`.
 
-4. Authenticate on `http://localhost:{WEBHOOK_PORT}/auth` (replace `{WEBHOOK_PORT}` with your port).
+4. To authenticate on your local system, visit `http://localhost:{WEBHOOK_PORT}/auth` (replace `{WEBHOOK_PORT}` with your port). To authenticate from another system, use `{WEBHOOK_URL}/auth` instead.
 
 5. After successfully authenticating via OAuth you will be redirected to the Grafana dashboard.
 There you can login with the Grafana standard credentials (`user: admin`, `password: admin`) and are prompted to change them.
