@@ -31,7 +31,12 @@ If you prefer a manual setup process, please follow the instructions at 2.b.
     &nbsp; &nbsp; &nbsp;&nbsp; Then run `./setup.sh` in the project's directory.<br>
     &nbsp; &nbsp; &nbsp;&nbsp; If you run into any problems, follow the manual setup at 2.b.
 
-    b. &nbsp; To manually set up the project, create a `.env` file by copying [`.env.example`](.env.example) and follow the instructions above each variable.
+    b. &nbsp; To manually set up the project, create an OAuth2 client at [console.sipgate.com](https://console.sipgate.com).
+
+    &nbsp; &nbsp; &nbsp;&nbsp; If you want to authenticate on your local system, add `http://localhost:{WEBHOOK_PORT}/auth` as a Redirect-URI and a Web Origin to that client.<br>
+    &nbsp; &nbsp; &nbsp;&nbsp; If you also want to be able to authenticate from another system, use `{WEBHOOK_URL}/auth` instead.
+    
+    &nbsp; &nbsp; &nbsp;&nbsp; Then create a `.env` file by copying [`.env.example`](.env.example) and follow the instructions above each variable.
 
 3. Start the docker containers with `make up`.
 
